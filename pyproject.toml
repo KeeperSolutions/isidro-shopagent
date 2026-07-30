@@ -1,0 +1,20 @@
+[project]
+name = "shopagent"
+version = "0.1.0"
+description = "Conversational shopping assistant for product discovery, cart, and checkout"
+requires-python = ">=3.11"
+dependencies = [
+    "openai>=1.0.0",
+    "python-dotenv>=1.0.0",
+    "rich>=13.0.0",
+]
+
+[project.scripts]
+shopagent = "shopagent.main:run"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
