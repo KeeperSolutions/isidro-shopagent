@@ -1,0 +1,1401 @@
+{
+  "version": 1,
+  "currency": "USD",
+  "products": [
+    {
+      "id": "prod_001",
+      "name": "Stride Lite Runner",
+      "description": "Lightweight daily trainer with a responsive foam midsole and breathable mesh upper for easy miles.",
+      "category": "Running",
+      "brand": "Apex Sport",
+      "rating": 4.6,
+      "variants": [
+        {
+          "sku": "AS-SLR-BLK-8",
+          "size": "8",
+          "color": "Black",
+          "price": 118.0,
+          "inventory": 14
+        },
+        {
+          "sku": "AS-SLR-BLK-9",
+          "size": "9",
+          "color": "Black",
+          "price": 118.0,
+          "inventory": 22
+        },
+        {
+          "sku": "AS-SLR-WHT-9",
+          "size": "9",
+          "color": "White",
+          "price": 118.0,
+          "inventory": 18
+        },
+        {
+          "sku": "AS-SLR-BLU-10",
+          "size": "10",
+          "color": "Blue",
+          "price": 118.0,
+          "inventory": 11
+        },
+        {
+          "sku": "AS-SLR-WHT-11",
+          "size": "11",
+          "color": "White",
+          "price": 118.0,
+          "inventory": 0
+        }
+      ]
+    },
+    {
+      "id": "prod_002",
+      "name": "Tempo Carbon Racer",
+      "description": "Race-day shoe with a carbon plate and aggressive rocker for fast road efforts and PRs.",
+      "category": "Running",
+      "brand": "Apex Sport",
+      "rating": 4.8,
+      "variants": [
+        {
+          "sku": "AS-TCR-ORG-8",
+          "size": "8",
+          "color": "Orange",
+          "price": 249.0,
+          "inventory": 6
+        },
+        {
+          "sku": "AS-TCR-ORG-9",
+          "size": "9",
+          "color": "Orange",
+          "price": 249.0,
+          "inventory": 9
+        },
+        {
+          "sku": "AS-TCR-BLK-9",
+          "size": "9",
+          "color": "Black",
+          "price": 249.0,
+          "inventory": 7
+        },
+        {
+          "sku": "AS-TCR-BLK-10",
+          "size": "10",
+          "color": "Black",
+          "price": 249.0,
+          "inventory": 5
+        },
+        {
+          "sku": "AS-TCR-ORG-11",
+          "size": "11",
+          "color": "Orange",
+          "price": 249.0,
+          "inventory": 3
+        }
+      ]
+    },
+    {
+      "id": "prod_003",
+      "name": "TrailPeak Summit GTX",
+      "description": "Waterproof trail runner with sticky rubber lugs and a protective toe cap for wet, rocky terrain.",
+      "category": "Running",
+      "brand": "TrailPeak",
+      "rating": 4.7,
+      "variants": [
+        {
+          "sku": "TP-SGT-GRY-8",
+          "size": "8",
+          "color": "Gray",
+          "price": 158.0,
+          "inventory": 10
+        },
+        {
+          "sku": "TP-SGT-GRY-9",
+          "size": "9",
+          "color": "Gray",
+          "price": 158.0,
+          "inventory": 16
+        },
+        {
+          "sku": "TP-SGT-GRN-9",
+          "size": "9",
+          "color": "Green",
+          "price": 158.0,
+          "inventory": 12
+        },
+        {
+          "sku": "TP-SGT-GRN-10",
+          "size": "10",
+          "color": "Green",
+          "price": 158.0,
+          "inventory": 8
+        },
+        {
+          "sku": "TP-SGT-GRY-12",
+          "size": "12",
+          "color": "Gray",
+          "price": 160.0,
+          "inventory": 4
+        }
+      ]
+    },
+    {
+      "id": "prod_004",
+      "name": "Cloudstep Cushion Plus",
+      "description": "Max-cushion road shoe built for long easy runs and recovery days. Soft landing, smooth ride.",
+      "category": "Running",
+      "brand": "SoftForm",
+      "rating": 4.5,
+      "variants": [
+        {
+          "sku": "SF-CCP-NVY-8",
+          "size": "8",
+          "color": "Navy",
+          "price": 139.0,
+          "inventory": 13
+        },
+        {
+          "sku": "SF-CCP-NVY-9",
+          "size": "9",
+          "color": "Navy",
+          "price": 139.0,
+          "inventory": 19
+        },
+        {
+          "sku": "SF-CCP-PNK-9",
+          "size": "9",
+          "color": "Pink",
+          "price": 139.0,
+          "inventory": 11
+        },
+        {
+          "sku": "SF-CCP-PNK-10",
+          "size": "10",
+          "color": "Pink",
+          "price": 139.0,
+          "inventory": 7
+        },
+        {
+          "sku": "SF-CCP-NVY-11",
+          "size": "11",
+          "color": "Navy",
+          "price": 139.0,
+          "inventory": 9
+        }
+      ]
+    },
+    {
+      "id": "prod_005",
+      "name": "Velocity Knit Trainer",
+      "description": "Sock-fit knit upper with a flexible midsole for tempo workouts and everyday training.",
+      "category": "Running",
+      "brand": "UrbanThread",
+      "rating": 4.3,
+      "variants": [
+        {
+          "sku": "UT-VKT-BLK-8",
+          "size": "8",
+          "color": "Black",
+          "price": 98.0,
+          "inventory": 15
+        },
+        {
+          "sku": "UT-VKT-BLK-9",
+          "size": "9",
+          "color": "Black",
+          "price": 98.0,
+          "inventory": 20
+        },
+        {
+          "sku": "UT-VKT-RED-9",
+          "size": "9",
+          "color": "Red",
+          "price": 98.0,
+          "inventory": 8
+        },
+        {
+          "sku": "UT-VKT-RED-10",
+          "size": "10",
+          "color": "Red",
+          "price": 98.0,
+          "inventory": 6
+        },
+        {
+          "sku": "UT-VKT-BLK-10",
+          "size": "10",
+          "color": "Black",
+          "price": 98.0,
+          "inventory": 17
+        }
+      ]
+    },
+    {
+      "id": "prod_006",
+      "name": "TrailPeak Ridge Grip",
+      "description": "Rugged trail shoe with reinforced sidewalls and deep multidirectional lugs for steep descents.",
+      "category": "Running",
+      "brand": "TrailPeak",
+      "rating": 4.6,
+      "variants": [
+        {
+          "sku": "TP-TRG-OLV-8",
+          "size": "8",
+          "color": "Olive",
+          "price": 144.0,
+          "inventory": 9
+        },
+        {
+          "sku": "TP-TRG-OLV-9",
+          "size": "9",
+          "color": "Olive",
+          "price": 144.0,
+          "inventory": 14
+        },
+        {
+          "sku": "TP-TRG-BLK-9",
+          "size": "9",
+          "color": "Black",
+          "price": 144.0,
+          "inventory": 18
+        },
+        {
+          "sku": "TP-TRG-BLK-10",
+          "size": "10",
+          "color": "Black",
+          "price": 144.0,
+          "inventory": 12
+        },
+        {
+          "sku": "TP-TRG-OLV-11",
+          "size": "11",
+          "color": "Olive",
+          "price": 144.0,
+          "inventory": 5
+        }
+      ]
+    },
+    {
+      "id": "prod_007",
+      "name": "Aero Bounce Distance",
+      "description": "Balanced cushioning and a wide platform for marathon training blocks and long weekend runs.",
+      "category": "Running",
+      "brand": "Apex Sport",
+      "rating": 4.4,
+      "variants": [
+        {
+          "sku": "AS-ABD-WHT-8",
+          "size": "8",
+          "color": "White",
+          "price": 129.0,
+          "inventory": 11
+        },
+        {
+          "sku": "AS-ABD-WHT-9",
+          "size": "9",
+          "color": "White",
+          "price": 129.0,
+          "inventory": 21
+        },
+        {
+          "sku": "AS-ABD-BLU-9",
+          "size": "9",
+          "color": "Blue",
+          "price": 129.0,
+          "inventory": 10
+        },
+        {
+          "sku": "AS-ABD-BLU-10",
+          "size": "10",
+          "color": "Blue",
+          "price": 129.0,
+          "inventory": 8
+        },
+        {
+          "sku": "AS-ABD-WHT-11",
+          "size": "11",
+          "color": "White",
+          "price": 129.0,
+          "inventory": 0
+        }
+      ]
+    },
+    {
+      "id": "prod_008",
+      "name": "Harbor Lane Coast Run",
+      "description": "Minimalist road shoe with a flexible sole and quick-dry upper for warm-weather miles.",
+      "category": "Running",
+      "brand": "Harbor Lane",
+      "rating": 4.2,
+      "variants": [
+        {
+          "sku": "HL-HCR-SND-8",
+          "size": "8",
+          "color": "Sand",
+          "price": 89.0,
+          "inventory": 12
+        },
+        {
+          "sku": "HL-HCR-SND-9",
+          "size": "9",
+          "color": "Sand",
+          "price": 89.0,
+          "inventory": 16
+        },
+        {
+          "sku": "HL-HCR-AQA-9",
+          "size": "9",
+          "color": "Aqua",
+          "price": 89.0,
+          "inventory": 9
+        },
+        {
+          "sku": "HL-HCR-AQA-10",
+          "size": "10",
+          "color": "Aqua",
+          "price": 89.0,
+          "inventory": 7
+        },
+        {
+          "sku": "HL-HCR-SND-10",
+          "size": "10",
+          "color": "Sand",
+          "price": 89.0,
+          "inventory": 11
+        }
+      ]
+    },
+    {
+      "id": "prod_009",
+      "name": "Everyday Court Classic",
+      "description": "Clean low-top leather sneaker with a cushioned insole and gum rubber outsole for daily wear.",
+      "category": "Sneakers",
+      "brand": "UrbanThread",
+      "rating": 4.5,
+      "variants": [
+        {
+          "sku": "UT-ECC-WHT-8",
+          "size": "8",
+          "color": "White",
+          "price": 78.0,
+          "inventory": 20
+        },
+        {
+          "sku": "UT-ECC-WHT-9",
+          "size": "9",
+          "color": "White",
+          "price": 78.0,
+          "inventory": 28
+        },
+        {
+          "sku": "UT-ECC-BLK-9",
+          "size": "9",
+          "color": "Black",
+          "price": 78.0,
+          "inventory": 18
+        },
+        {
+          "sku": "UT-ECC-BLK-10",
+          "size": "10",
+          "color": "Black",
+          "price": 78.0,
+          "inventory": 15
+        },
+        {
+          "sku": "UT-ECC-NVY-10",
+          "size": "10",
+          "color": "Navy",
+          "price": 78.0,
+          "inventory": 10
+        }
+      ]
+    },
+    {
+      "id": "prod_010",
+      "name": "Canvas Low-Top",
+      "description": "Classic vulcanized canvas sneaker with a durable toe cap and easy lace-up fit.",
+      "category": "Sneakers",
+      "brand": "Harbor Lane",
+      "rating": 4.3,
+      "variants": [
+        {
+          "sku": "HL-CLT-WHT-8",
+          "size": "8",
+          "color": "White",
+          "price": 52.0,
+          "inventory": 24
+        },
+        {
+          "sku": "HL-CLT-WHT-9",
+          "size": "9",
+          "color": "White",
+          "price": 52.0,
+          "inventory": 30
+        },
+        {
+          "sku": "HL-CLT-NVY-9",
+          "size": "9",
+          "color": "Navy",
+          "price": 52.0,
+          "inventory": 16
+        },
+        {
+          "sku": "HL-CLT-RED-9",
+          "size": "9",
+          "color": "Red",
+          "price": 52.0,
+          "inventory": 8
+        },
+        {
+          "sku": "HL-CLT-RED-7",
+          "size": "7",
+          "color": "Red",
+          "price": 52.0,
+          "inventory": 0
+        }
+      ]
+    },
+    {
+      "id": "prod_011",
+      "name": "Retro Court Mid",
+      "description": "80s-inspired mid-top with padded collar, perforated toe box, and contrast heel tab.",
+      "category": "Sneakers",
+      "brand": "Apex Sport",
+      "rating": 4.6,
+      "variants": [
+        {
+          "sku": "AS-RCM-WHT-8",
+          "size": "8",
+          "color": "White/Green",
+          "price": 94.0,
+          "inventory": 11
+        },
+        {
+          "sku": "AS-RCM-WHT-9",
+          "size": "9",
+          "color": "White/Green",
+          "price": 94.0,
+          "inventory": 17
+        },
+        {
+          "sku": "AS-RCM-BLK-9",
+          "size": "9",
+          "color": "Black/Gold",
+          "price": 94.0,
+          "inventory": 13
+        },
+        {
+          "sku": "AS-RCM-BLK-10",
+          "size": "10",
+          "color": "Black/Gold",
+          "price": 94.0,
+          "inventory": 9
+        },
+        {
+          "sku": "AS-RCM-WHT-11",
+          "size": "11",
+          "color": "White/Green",
+          "price": 94.0,
+          "inventory": 6
+        }
+      ]
+    },
+    {
+      "id": "prod_012",
+      "name": "SoftForm Knit Slip-On",
+      "description": "Sock-like knit slip-on with a memory-foam footbed. No laces, all-day comfort.",
+      "category": "Sneakers",
+      "brand": "SoftForm",
+      "rating": 4.4,
+      "variants": [
+        {
+          "sku": "SF-KSO-GRY-8",
+          "size": "8",
+          "color": "Gray",
+          "price": 68.0,
+          "inventory": 14
+        },
+        {
+          "sku": "SF-KSO-GRY-9",
+          "size": "9",
+          "color": "Gray",
+          "price": 68.0,
+          "inventory": 22
+        },
+        {
+          "sku": "SF-KSO-BLK-9",
+          "size": "9",
+          "color": "Black",
+          "price": 68.0,
+          "inventory": 19
+        },
+        {
+          "sku": "SF-KSO-NVY-10",
+          "size": "10",
+          "color": "Navy",
+          "price": 68.0,
+          "inventory": 11
+        },
+        {
+          "sku": "SF-KSO-BLK-10",
+          "size": "10",
+          "color": "Black",
+          "price": 68.0,
+          "inventory": 15
+        }
+      ]
+    },
+    {
+      "id": "prod_013",
+      "name": "Platform Chunky Sneaker",
+      "description": "Bold chunky sole with a leather and suede upper. Statement sneaker for casual outfits.",
+      "category": "Sneakers",
+      "brand": "Bloom & Co",
+      "rating": 4.2,
+      "variants": [
+        {
+          "sku": "BC-PCS-WHT-7",
+          "size": "7",
+          "color": "White",
+          "price": 110.0,
+          "inventory": 8
+        },
+        {
+          "sku": "BC-PCS-WHT-8",
+          "size": "8",
+          "color": "White",
+          "price": 110.0,
+          "inventory": 12
+        },
+        {
+          "sku": "BC-PCS-PNK-8",
+          "size": "8",
+          "color": "Pink",
+          "price": 110.0,
+          "inventory": 7
+        },
+        {
+          "sku": "BC-PCS-BLK-9",
+          "size": "9",
+          "color": "Black",
+          "price": 110.0,
+          "inventory": 10
+        },
+        {
+          "sku": "BC-PCS-PNK-9",
+          "size": "9",
+          "color": "Pink",
+          "price": 110.0,
+          "inventory": 5
+        }
+      ]
+    },
+    {
+      "id": "prod_014",
+      "name": "Suede Skate Low",
+      "description": "Durable suede skate shoe with a vulcanized sole and reinforced ollie area.",
+      "category": "Sneakers",
+      "brand": "UrbanThread",
+      "rating": 4.5,
+      "variants": [
+        {
+          "sku": "UT-SSL-NVY-8",
+          "size": "8",
+          "color": "Navy",
+          "price": 72.0,
+          "inventory": 13
+        },
+        {
+          "sku": "UT-SSL-NVY-9",
+          "size": "9",
+          "color": "Navy",
+          "price": 72.0,
+          "inventory": 18
+        },
+        {
+          "sku": "UT-SSL-BRN-9",
+          "size": "9",
+          "color": "Brown",
+          "price": 72.0,
+          "inventory": 9
+        },
+        {
+          "sku": "UT-SSL-BRN-10",
+          "size": "10",
+          "color": "Brown",
+          "price": 72.0,
+          "inventory": 7
+        },
+        {
+          "sku": "UT-SSL-BLK-10",
+          "size": "10",
+          "color": "Black",
+          "price": 72.0,
+          "inventory": 14
+        }
+      ]
+    },
+    {
+      "id": "prod_015",
+      "name": "Leather Cupsole Sneaker",
+      "description": "Full-grain leather cupsole with a clean profile and removable orthotic-friendly insole.",
+      "category": "Sneakers",
+      "brand": "North & Oak",
+      "rating": 4.7,
+      "variants": [
+        {
+          "sku": "NO-LCS-WHT-8",
+          "size": "8",
+          "color": "White",
+          "price": 128.0,
+          "inventory": 9
+        },
+        {
+          "sku": "NO-LCS-WHT-9",
+          "size": "9",
+          "color": "White",
+          "price": 128.0,
+          "inventory": 14
+        },
+        {
+          "sku": "NO-LCS-TAN-9",
+          "size": "9",
+          "color": "Tan",
+          "price": 128.0,
+          "inventory": 8
+        },
+        {
+          "sku": "NO-LCS-TAN-10",
+          "size": "10",
+          "color": "Tan",
+          "price": 128.0,
+          "inventory": 6
+        },
+        {
+          "sku": "NO-LCS-BLK-10",
+          "size": "10",
+          "color": "Black",
+          "price": 128.0,
+          "inventory": 11
+        }
+      ]
+    },
+    {
+      "id": "prod_016",
+      "name": "Mesh Runner Lifestyle",
+      "description": "Running-inspired lifestyle sneaker with breathable mesh panels and a lightweight foam midsole.",
+      "category": "Sneakers",
+      "brand": "Apex Sport",
+      "rating": 4.4,
+      "variants": [
+        {
+          "sku": "AS-MRL-GRY-8",
+          "size": "8",
+          "color": "Gray",
+          "price": 88.0,
+          "inventory": 16
+        },
+        {
+          "sku": "AS-MRL-GRY-9",
+          "size": "9",
+          "color": "Gray",
+          "price": 88.0,
+          "inventory": 21
+        },
+        {
+          "sku": "AS-MRL-BLU-9",
+          "size": "9",
+          "color": "Blue",
+          "price": 88.0,
+          "inventory": 12
+        },
+        {
+          "sku": "AS-MRL-BLU-10",
+          "size": "10",
+          "color": "Blue",
+          "price": 88.0,
+          "inventory": 9
+        },
+        {
+          "sku": "AS-MRL-BLK-11",
+          "size": "11",
+          "color": "Black",
+          "price": 88.0,
+          "inventory": 7
+        }
+      ]
+    },
+    {
+      "id": "prod_017",
+      "name": "Chelsea Leather Boot",
+      "description": "Pull-on Chelsea boot in full-grain leather with elastic side gores and a weather-ready sole.",
+      "category": "Boots",
+      "brand": "North & Oak",
+      "rating": 4.8,
+      "variants": [
+        {
+          "sku": "NO-CLB-BRN-8",
+          "size": "8",
+          "color": "Brown",
+          "price": 168.0,
+          "inventory": 8
+        },
+        {
+          "sku": "NO-CLB-BRN-9",
+          "size": "9",
+          "color": "Brown",
+          "price": 168.0,
+          "inventory": 12
+        },
+        {
+          "sku": "NO-CLB-BLK-9",
+          "size": "9",
+          "color": "Black",
+          "price": 168.0,
+          "inventory": 14
+        },
+        {
+          "sku": "NO-CLB-BLK-10",
+          "size": "10",
+          "color": "Black",
+          "price": 168.0,
+          "inventory": 10
+        },
+        {
+          "sku": "NO-CLB-BRN-11",
+          "size": "11",
+          "color": "Brown",
+          "price": 168.0,
+          "inventory": 5
+        }
+      ]
+    },
+    {
+      "id": "prod_018",
+      "name": "TrailPeak Hikers",
+      "description": "Waterproof mid hiking boot with ankle support, Vibram-style lug sole, and gusseted tongue.",
+      "category": "Boots",
+      "brand": "TrailPeak",
+      "rating": 4.7,
+      "variants": [
+        {
+          "sku": "TP-THK-GRY-8",
+          "size": "8",
+          "color": "Gray",
+          "price": 178.0,
+          "inventory": 7
+        },
+        {
+          "sku": "TP-THK-GRY-9",
+          "size": "9",
+          "color": "Gray",
+          "price": 178.0,
+          "inventory": 11
+        },
+        {
+          "sku": "TP-THK-OLV-9",
+          "size": "9",
+          "color": "Olive",
+          "price": 178.0,
+          "inventory": 9
+        },
+        {
+          "sku": "TP-THK-OLV-10",
+          "size": "10",
+          "color": "Olive",
+          "price": 178.0,
+          "inventory": 8
+        },
+        {
+          "sku": "TP-THK-GRY-11",
+          "size": "11",
+          "color": "Gray",
+          "price": 178.0,
+          "inventory": 4
+        }
+      ]
+    },
+    {
+      "id": "prod_019",
+      "name": "Workhorse Lace-Up Boot",
+      "description": "Oil-tanned leather work boot with a steel shank and slip-resistant outsole for long shifts.",
+      "category": "Boots",
+      "brand": "North & Oak",
+      "rating": 4.6,
+      "variants": [
+        {
+          "sku": "NO-WLB-BRN-8",
+          "size": "8",
+          "color": "Brown",
+          "price": 198.0,
+          "inventory": 6
+        },
+        {
+          "sku": "NO-WLB-BRN-9",
+          "size": "9",
+          "color": "Brown",
+          "price": 198.0,
+          "inventory": 10
+        },
+        {
+          "sku": "NO-WLB-BRN-10",
+          "size": "10",
+          "color": "Brown",
+          "price": 198.0,
+          "inventory": 9
+        },
+        {
+          "sku": "NO-WLB-BLK-9",
+          "size": "9",
+          "color": "Black",
+          "price": 198.0,
+          "inventory": 8
+        },
+        {
+          "sku": "NO-WLB-BLK-11",
+          "size": "11",
+          "color": "Black",
+          "price": 198.0,
+          "inventory": 3
+        }
+      ]
+    },
+    {
+      "id": "prod_020",
+      "name": "Suede Desert Boot",
+      "description": "Classic crepe-sole desert boot in soft suede. Unlined for a broken-in feel from day one.",
+      "category": "Boots",
+      "brand": "Harbor Lane",
+      "rating": 4.4,
+      "variants": [
+        {
+          "sku": "HL-SDB-SND-8",
+          "size": "8",
+          "color": "Sand",
+          "price": 124.0,
+          "inventory": 10
+        },
+        {
+          "sku": "HL-SDB-SND-9",
+          "size": "9",
+          "color": "Sand",
+          "price": 124.0,
+          "inventory": 15
+        },
+        {
+          "sku": "HL-SDB-OLV-9",
+          "size": "9",
+          "color": "Olive",
+          "price": 124.0,
+          "inventory": 8
+        },
+        {
+          "sku": "HL-SDB-OLV-10",
+          "size": "10",
+          "color": "Olive",
+          "price": 124.0,
+          "inventory": 7
+        },
+        {
+          "sku": "HL-SDB-SND-10",
+          "size": "10",
+          "color": "Sand",
+          "price": 124.0,
+          "inventory": 11
+        }
+      ]
+    },
+    {
+      "id": "prod_021",
+      "name": "Winter Insulated Boot",
+      "description": "Insulated winter boot with a waterproof membrane and deep tread for snow and slush.",
+      "category": "Boots",
+      "brand": "TrailPeak",
+      "rating": 4.5,
+      "variants": [
+        {
+          "sku": "TP-WIB-BLK-8",
+          "size": "8",
+          "color": "Black",
+          "price": 164.0,
+          "inventory": 9
+        },
+        {
+          "sku": "TP-WIB-BLK-9",
+          "size": "9",
+          "color": "Black",
+          "price": 164.0,
+          "inventory": 14
+        },
+        {
+          "sku": "TP-WIB-GRY-9",
+          "size": "9",
+          "color": "Gray",
+          "price": 164.0,
+          "inventory": 8
+        },
+        {
+          "sku": "TP-WIB-GRY-10",
+          "size": "10",
+          "color": "Gray",
+          "price": 164.0,
+          "inventory": 6
+        },
+        {
+          "sku": "TP-WIB-BLK-11",
+          "size": "11",
+          "color": "Black",
+          "price": 164.0,
+          "inventory": 0
+        }
+      ]
+    },
+    {
+      "id": "prod_022",
+      "name": "Ankle Heeled Boot",
+      "description": "Sleek ankle boot with a block heel and side zip. Dresses up jeans or skirts easily.",
+      "category": "Boots",
+      "brand": "Bloom & Co",
+      "rating": 4.3,
+      "variants": [
+        {
+          "sku": "BC-AHB-BLK-7",
+          "size": "7",
+          "color": "Black",
+          "price": 142.0,
+          "inventory": 8
+        },
+        {
+          "sku": "BC-AHB-BLK-8",
+          "size": "8",
+          "color": "Black",
+          "price": 142.0,
+          "inventory": 12
+        },
+        {
+          "sku": "BC-AHB-BRN-8",
+          "size": "8",
+          "color": "Brown",
+          "price": 142.0,
+          "inventory": 7
+        },
+        {
+          "sku": "BC-AHB-BRN-9",
+          "size": "9",
+          "color": "Brown",
+          "price": 142.0,
+          "inventory": 6
+        },
+        {
+          "sku": "BC-AHB-BLK-9",
+          "size": "9",
+          "color": "Black",
+          "price": 142.0,
+          "inventory": 10
+        }
+      ]
+    },
+    {
+      "id": "prod_023",
+      "name": "Rain Rubber Boot",
+      "description": "Mid-calf rubber rain boot with a fleece-ready lining and sturdy heel kick for muddy days.",
+      "category": "Boots",
+      "brand": "Harbor Lane",
+      "rating": 4.2,
+      "variants": [
+        {
+          "sku": "HL-RRB-BLK-8",
+          "size": "8",
+          "color": "Black",
+          "price": 68.0,
+          "inventory": 16
+        },
+        {
+          "sku": "HL-RRB-BLK-9",
+          "size": "9",
+          "color": "Black",
+          "price": 68.0,
+          "inventory": 20
+        },
+        {
+          "sku": "HL-RRB-GRN-9",
+          "size": "9",
+          "color": "Green",
+          "price": 68.0,
+          "inventory": 9
+        },
+        {
+          "sku": "HL-RRB-GRN-10",
+          "size": "10",
+          "color": "Green",
+          "price": 68.0,
+          "inventory": 7
+        },
+        {
+          "sku": "HL-RRB-BLK-10",
+          "size": "10",
+          "color": "Black",
+          "price": 68.0,
+          "inventory": 14
+        }
+      ]
+    },
+    {
+      "id": "prod_024",
+      "name": "Chukka Leather Boot",
+      "description": "Three-eyelet chukka in burnished leather with a stacked heel and leather midsole.",
+      "category": "Boots",
+      "brand": "North & Oak",
+      "rating": 4.6,
+      "variants": [
+        {
+          "sku": "NO-CHB-BRN-8",
+          "size": "8",
+          "color": "Brown",
+          "price": 156.0,
+          "inventory": 7
+        },
+        {
+          "sku": "NO-CHB-BRN-9",
+          "size": "9",
+          "color": "Brown",
+          "price": 156.0,
+          "inventory": 11
+        },
+        {
+          "sku": "NO-CHB-BLK-9",
+          "size": "9",
+          "color": "Black",
+          "price": 156.0,
+          "inventory": 9
+        },
+        {
+          "sku": "NO-CHB-BLK-10",
+          "size": "10",
+          "color": "Black",
+          "price": 156.0,
+          "inventory": 8
+        },
+        {
+          "sku": "NO-CHB-BRN-10",
+          "size": "10",
+          "color": "Brown",
+          "price": 156.0,
+          "inventory": 6
+        }
+      ]
+    },
+    {
+      "id": "prod_025",
+      "name": "TrailPeak Sport Sandal",
+      "description": "Adjustable sport sandal with a grippy outsole and quick-dry webbing for rivers and hot trails.",
+      "category": "Sandals",
+      "brand": "TrailPeak",
+      "rating": 4.5,
+      "variants": [
+        {
+          "sku": "TP-TSS-BLK-8",
+          "size": "8",
+          "color": "Black",
+          "price": 74.0,
+          "inventory": 14
+        },
+        {
+          "sku": "TP-TSS-BLK-9",
+          "size": "9",
+          "color": "Black",
+          "price": 74.0,
+          "inventory": 19
+        },
+        {
+          "sku": "TP-TSS-BLU-9",
+          "size": "9",
+          "color": "Blue",
+          "price": 74.0,
+          "inventory": 11
+        },
+        {
+          "sku": "TP-TSS-BLU-10",
+          "size": "10",
+          "color": "Blue",
+          "price": 74.0,
+          "inventory": 9
+        },
+        {
+          "sku": "TP-TSS-GRY-10",
+          "size": "10",
+          "color": "Gray",
+          "price": 74.0,
+          "inventory": 8
+        }
+      ]
+    },
+    {
+      "id": "prod_026",
+      "name": "Leather Slide Sandal",
+      "description": "Minimal leather slide with a contoured footbed and wide strap. Easy pool-to-street option.",
+      "category": "Sandals",
+      "brand": "Harbor Lane",
+      "rating": 4.3,
+      "variants": [
+        {
+          "sku": "HL-LSS-TAN-8",
+          "size": "8",
+          "color": "Tan",
+          "price": 58.0,
+          "inventory": 12
+        },
+        {
+          "sku": "HL-LSS-TAN-9",
+          "size": "9",
+          "color": "Tan",
+          "price": 58.0,
+          "inventory": 18
+        },
+        {
+          "sku": "HL-LSS-BLK-9",
+          "size": "9",
+          "color": "Black",
+          "price": 58.0,
+          "inventory": 15
+        },
+        {
+          "sku": "HL-LSS-BLK-10",
+          "size": "10",
+          "color": "Black",
+          "price": 58.0,
+          "inventory": 11
+        },
+        {
+          "sku": "HL-LSS-TAN-11",
+          "size": "11",
+          "color": "Tan",
+          "price": 58.0,
+          "inventory": 6
+        }
+      ]
+    },
+    {
+      "id": "prod_027",
+      "name": "Cushion Recovery Slide",
+      "description": "Plush foam recovery slide for post-run cooldown. Soft straps and a deep heel cup.",
+      "category": "Sandals",
+      "brand": "Apex Sport",
+      "rating": 4.6,
+      "variants": [
+        {
+          "sku": "AS-CRS-BLK-8",
+          "size": "8",
+          "color": "Black",
+          "price": 42.0,
+          "inventory": 22
+        },
+        {
+          "sku": "AS-CRS-BLK-9",
+          "size": "9",
+          "color": "Black",
+          "price": 42.0,
+          "inventory": 28
+        },
+        {
+          "sku": "AS-CRS-WHT-9",
+          "size": "9",
+          "color": "White",
+          "price": 42.0,
+          "inventory": 16
+        },
+        {
+          "sku": "AS-CRS-WHT-10",
+          "size": "10",
+          "color": "White",
+          "price": 42.0,
+          "inventory": 12
+        },
+        {
+          "sku": "AS-CRS-NVY-10",
+          "size": "10",
+          "color": "Navy",
+          "price": 42.0,
+          "inventory": 10
+        }
+      ]
+    },
+    {
+      "id": "prod_028",
+      "name": "Strappy Summer Sandal",
+      "description": "Lightweight multi-strap sandal with a slight wedge and soft footbed for warm-weather days.",
+      "category": "Sandals",
+      "brand": "Bloom & Co",
+      "rating": 4.4,
+      "variants": [
+        {
+          "sku": "BC-SSS-GLD-7",
+          "size": "7",
+          "color": "Gold",
+          "price": 64.0,
+          "inventory": 9
+        },
+        {
+          "sku": "BC-SSS-GLD-8",
+          "size": "8",
+          "color": "Gold",
+          "price": 64.0,
+          "inventory": 13
+        },
+        {
+          "sku": "BC-SSS-BLK-8",
+          "size": "8",
+          "color": "Black",
+          "price": 64.0,
+          "inventory": 11
+        },
+        {
+          "sku": "BC-SSS-BLK-9",
+          "size": "9",
+          "color": "Black",
+          "price": 64.0,
+          "inventory": 10
+        },
+        {
+          "sku": "BC-SSS-TAN-9",
+          "size": "9",
+          "color": "Tan",
+          "price": 64.0,
+          "inventory": 7
+        }
+      ]
+    },
+    {
+      "id": "prod_029",
+      "name": "Fisherman Sandal",
+      "description": "Closed-toe fisherman sandal in soft leather with an adjustable buckle and cork-blend footbed.",
+      "category": "Sandals",
+      "brand": "North & Oak",
+      "rating": 4.5,
+      "variants": [
+        {
+          "sku": "NO-FSH-BRN-8",
+          "size": "8",
+          "color": "Brown",
+          "price": 98.0,
+          "inventory": 8
+        },
+        {
+          "sku": "NO-FSH-BRN-9",
+          "size": "9",
+          "color": "Brown",
+          "price": 98.0,
+          "inventory": 12
+        },
+        {
+          "sku": "NO-FSH-TAN-9",
+          "size": "9",
+          "color": "Tan",
+          "price": 98.0,
+          "inventory": 9
+        },
+        {
+          "sku": "NO-FSH-TAN-10",
+          "size": "10",
+          "color": "Tan",
+          "price": 98.0,
+          "inventory": 7
+        },
+        {
+          "sku": "NO-FSH-BRN-10",
+          "size": "10",
+          "color": "Brown",
+          "price": 98.0,
+          "inventory": 6
+        }
+      ]
+    },
+    {
+      "id": "prod_030",
+      "name": "Flip Flop Essentials",
+      "description": "Classic foam flip-flop with a textured footbed and durable thong strap. Packable beach staple.",
+      "category": "Sandals",
+      "brand": "UrbanThread",
+      "rating": 4.1,
+      "variants": [
+        {
+          "sku": "UT-FFE-BLK-8",
+          "size": "8",
+          "color": "Black",
+          "price": 18.0,
+          "inventory": 30
+        },
+        {
+          "sku": "UT-FFE-BLK-9",
+          "size": "9",
+          "color": "Black",
+          "price": 18.0,
+          "inventory": 36
+        },
+        {
+          "sku": "UT-FFE-BLU-9",
+          "size": "9",
+          "color": "Blue",
+          "price": 18.0,
+          "inventory": 20
+        },
+        {
+          "sku": "UT-FFE-RED-10",
+          "size": "10",
+          "color": "Red",
+          "price": 18.0,
+          "inventory": 14
+        },
+        {
+          "sku": "UT-FFE-BLU-8",
+          "size": "8",
+          "color": "Blue",
+          "price": 18.0,
+          "inventory": 0
+        }
+      ]
+    },
+    {
+      "id": "prod_031",
+      "name": "Waterproof Adventure Sandal",
+      "description": "Rugged adventure sandal with toe protection and drain ports for wet hikes and camp days.",
+      "category": "Sandals",
+      "brand": "TrailPeak",
+      "rating": 4.6,
+      "variants": [
+        {
+          "sku": "TP-WAS-OLV-8",
+          "size": "8",
+          "color": "Olive",
+          "price": 86.0,
+          "inventory": 10
+        },
+        {
+          "sku": "TP-WAS-OLV-9",
+          "size": "9",
+          "color": "Olive",
+          "price": 86.0,
+          "inventory": 14
+        },
+        {
+          "sku": "TP-WAS-BLK-9",
+          "size": "9",
+          "color": "Black",
+          "price": 86.0,
+          "inventory": 16
+        },
+        {
+          "sku": "TP-WAS-BLK-10",
+          "size": "10",
+          "color": "Black",
+          "price": 86.0,
+          "inventory": 11
+        },
+        {
+          "sku": "TP-WAS-OLV-11",
+          "size": "11",
+          "color": "Olive",
+          "price": 86.0,
+          "inventory": 5
+        }
+      ]
+    }
+  ]
+}
