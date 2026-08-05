@@ -2,15 +2,16 @@
 
 from shopagent import costs
 from shopagent.openai_client import get_completion
-from shopagent.prompts import SYSTEM_PROMPT
+from shopagent.prompts import DELIMITER, SYSTEM_PROMPT
 
 
 def handle_user_message(input_items, client, settings, user_text):
     """Handle one user message: call OpenAI and return usage."""
 
+    sanitized = user_text.replace(DELIMITER, "")
     input_items.append({
         "role": "user",
-        "content": user_text,
+        "content": f"{DELIMITER}{sanitized}{DELIMITER}",
     })
     message_usage = costs.empty_usage()
 
