@@ -31,6 +31,13 @@ def print_agent_prefix():
     console.print("[bold magenta]ShopAgent:[/bold magenta] ", end="")
 
 
+def print_moderation_message():
+    console.print(
+        "I'm sorry, I can't help with that request.",
+        markup=False,
+    )
+
+
 def print_stream_message(text: str):
     console.print(text, end="", markup=False)
 

@@ -7,6 +7,15 @@ def create_client(settings):
     return OpenAI(api_key=settings["api_key"])
 
 
+def moderate_text(client, text):
+    """Calls the Moderation API and returns the first result."""
+    response = client.moderations.create(
+        model="omni-moderation-latest",
+        input=text,
+    )
+    return response.results[0]
+
+
 def get_completion(
     client,
     settings,

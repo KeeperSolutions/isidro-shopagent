@@ -31,6 +31,11 @@ def run():
                 user_input,
             )
 
+            # If the message is blocked by moderation, don't add usage and continue
+            if message_usage is None:
+                display.console.print()
+                continue
+
             costs.add_usage(session_usage, message_usage)
             message_cost = costs.cost_usd(message_usage, settings["input_price"], settings["output_price"])
             session_cost = costs.cost_usd(session_usage, settings["input_price"], settings["output_price"])
