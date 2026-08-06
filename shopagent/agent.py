@@ -9,44 +9,44 @@ from shopagent.openai_client import (
     get_function_calls,
     moderate_text,
     parse_response,
+    stream_response,
     format_response_usage,
 )
 from shopagent.prompts import DELIMITER, SYSTEM_PROMPT
-from shopagent.tools import TOOLS, ShopAgentReply, execute_tool
+from shopagent.tools import TOOLS, execute_tool
 
 MAX_TOOL_ROUNDS = 5
 
 
 def _finalize_reply(client, settings, input_items, message_usage):
-    """Ask the model for a structured ShopAgentReply and show it to the user."""
-    response = parse_response(
+    """Stream a text reply and show it to the user as it arrives."""
+
+    def on_text_delta(delta: str):
+        display.print_stream_message(delta)
+
+    response = stream_response(
         client,
         settings,
         input_items,
         SYSTEM_PROMPT,
-        text_format=ShopAgentReply,
         tool_choice="none",
+        on_text_delta=on_text_delta,
     )
     costs.add_usage(message_usage, format_response_usage(response))
 
-    reply = response.output_parsed
-    if reply is not None:
-        display.print_message(reply.message)
-        input_items.append({"role": "assistant", "content": reply.message})
-        return message_usage
-
     text = get_assistant_text(response)
     if text:
-        display.print_message(text)
+        display.end_stream_message()
         input_items.append({"role": "assistant", "content": text})
         return message_usage
 
-    display.print_message("I'm sorry, I couldn't put together a reply. Please try again.")
+    display.print_stream_message("I'm sorry, I couldn't put together a reply. Please try again.")
+    display.end_stream_message()
     return message_usage
 
 
 def handle_user_message(input_items, client, settings, user_text, cart):
-    """Handle one user message: moderate, tool loop, structured reply.
+    """Handle one user message: moderate, tool loop, then streamed reply.
 
     Returns None if the message is blocked by moderation.
     """

@@ -43,6 +43,17 @@ def print_message(text: str):
     console.print()
 
 
+def print_stream_message(text: str):
+    """Write a streamed reply chunk without a trailing newline."""
+    console.print(text, markup=False, end="")
+
+
+def end_stream_message():
+    """Finish a streamed reply the same way print_message ends."""
+    console.print()
+    console.print()
+
+
 def print_usage(message_usage, message_cost, session_usage, session_cost):
     table = Table(show_header=True, header_style="bold", box=None, padding=(0, 1))
     table.add_column("Usage", style="dim")

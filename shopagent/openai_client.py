@@ -13,17 +13,14 @@ def moderate_text(client, text):
     return response.results[0]
 
 
-def parse_response(
-    client,
+def _response_kwargs(
     settings,
     input_items,
     instructions,
     *,
     tools=None,
     tool_choice=None,
-    text_format=None,
 ):
-    """Call the Responses API with client.responses.parse and return the parsed response."""
     kwargs = {
         "model": settings["model"],
         "input": input_items,
@@ -36,10 +33,55 @@ def parse_response(
     # tool_choice is "auto" by default
     if tool_choice is not None:
         kwargs["tool_choice"] = tool_choice
-    if text_format is not None:
-        kwargs["text_format"] = text_format
 
-    return client.responses.parse(**kwargs)
+    return kwargs
+
+
+def parse_response(
+    client,
+    settings,
+    input_items,
+    instructions,
+    *,
+    tools=None,
+    tool_choice=None,
+):
+    """Call the Responses API with client.responses.parse and return the response."""
+    return client.responses.parse(
+        **_response_kwargs(
+            settings,
+            input_items,
+            instructions,
+            tools=tools,
+            tool_choice=tool_choice,
+        )
+    )
+
+
+def stream_response(
+    client,
+    settings,
+    input_items,
+    instructions,
+    *,
+    tools=None,
+    tool_choice=None,
+    on_text_delta=None,
+):
+    """Stream a Responses API call."""
+    with client.responses.stream(
+        **_response_kwargs(
+            settings,
+            input_items,
+            instructions,
+            tools=tools,
+            tool_choice=tool_choice,
+        )
+    ) as stream:
+        for event in stream:
+            if on_text_delta is not None and event.type == "response.output_text.delta":
+                on_text_delta(event.delta)
+        return stream.get_final_response()
 
 
 def format_response_usage(response):

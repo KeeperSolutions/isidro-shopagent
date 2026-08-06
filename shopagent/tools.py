@@ -78,12 +78,6 @@ class CalculateCartTotalArgs(BaseModel):
     """Calculate the current cart and subtotal."""
 
 
-class ShopAgentReply(BaseModel):
-    message: str = Field(
-        description="Natural-language reply for the user (under ~3 sentences)",
-    )
-
-
 TOOLS = [
     pydantic_function_tool(
         SearchProductsArgs,
