@@ -7,6 +7,7 @@ def run():
     settings = load_settings()
     client = create_client(settings)
     input_items = []
+    cart = []
     session_usage = costs.empty_usage()
 
     display.print_welcome()
@@ -29,6 +30,7 @@ def run():
                 client,
                 settings,
                 user_input,
+                cart,
             )
 
             # If the message is blocked by moderation, don't add usage and continue

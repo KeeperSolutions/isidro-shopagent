@@ -38,8 +38,9 @@ def print_moderation_message():
     )
 
 
-def print_stream_message(text: str):
-    console.print(text, end="", markup=False)
+def print_message(text: str):
+    console.print(text, markup=False)
+    console.print()
 
 
 def print_usage(message_usage, message_cost, session_usage, session_cost):
