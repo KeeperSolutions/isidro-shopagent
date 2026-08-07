@@ -2,7 +2,7 @@ import json
 from enum import Enum
 
 from openai import pydantic_function_tool
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, Field, ValidationError, model_validator
 
 from shopagent import cart
 from shopagent import catalog
@@ -15,11 +15,12 @@ class Category(str, Enum):
     Sandals = "Sandals"
 
 
-class SearchProductsArgs(BaseModel):
-    query: str = Field(
-        description="Free-text search against name, description, and brand",
-    )
+class SearchMode(str, Enum):
+    filter = "filter"
+    semantic = "semantic"
 
+
+class FilterProductsArgs(BaseModel):
     category: Category | None = Field(
         default=None,
         description="Exact category filter: Running, Sneakers, Boots, or Sandals",
@@ -41,24 +42,72 @@ class SearchProductsArgs(BaseModel):
     )
 
 
-class SearchCategoryArgs(BaseModel):
-    category: Category = Field(
-        description="Exact catalog category: Running, Sneakers, Boots, or Sandals",
+class SemanticSearchArgs(BaseModel):
+    query: str = Field(
+        description="Natural-language description of what the shopper wants",
+    )
+
+    limit: int = Field(
+        default=5,
+        ge=1,
+        le=20,
+        description="Maximum number of products to return (default 5)",
+    )
+
+
+class SearchProductsArgs(BaseModel):
+    mode: SearchMode = Field(
+        description="Search mode: 'filter' for SQL filters, 'semantic' for vector similarity",
+    )
+
+    query: str | None = Field(
+        default=None,
+        description="Required for semantic mode: natural-language search query",
+    )
+
+    category: Category | None = Field(
+        default=None,
+        description="Filter mode: exact category (Running, Sneakers, Boots, or Sandals)",
     )
 
     max_price: float | None = Field(
         default=None,
-        description="Maximum price in USD; only variants at or below this price",
+        description="Filter mode: maximum price (USD)",
     )
 
     size: str | None = Field(
         default=None,
-        description='Required size string, e.g. "9" or "10"',
+        description='Filter mode: required size string (e.g. "9" or "10")',
     )
 
     in_stock_only: bool = Field(
         default=True,
-        description="When true, only include variants with inventory > 0",
+        description="Filter mode: when true, only variants with inventory > 0",
+    )
+
+    limit: int = Field(
+        default=5,
+        ge=1,
+        le=20,
+        description="Semantic mode: max products to return (default 5)",
+    )
+
+    @model_validator(mode="after")
+    def validate_mode_args(self):
+        if self.mode == SearchMode.semantic and (not self.query or not self.query.strip()):
+            raise ValueError("query is required when mode is 'semantic'")
+        return self
+
+
+class GetProductArgs(BaseModel):
+    product_id: str = Field(
+        description="Exact product id from a prior search result (e.g. prod_001)",
+    )
+
+
+class CheckStockArgs(BaseModel):
+    sku: str = Field(
+        description="Exact variant SKU (e.g. SKU_001)",
     )
 
 
@@ -83,18 +132,44 @@ TOOLS = [
         SearchProductsArgs,
         name="search_products",
         description=(
-            "Search the product catalog by keyword against name, description, and brand. "
-            "Use for specific product or brand names. Prices are USD. "
-            "Returns a list of matching products with variants."
+            "Search the catalog. Use mode='filter' for category/price/size/stock filters. "
+            "Use mode='semantic' with a natural-language query for similarity search "
+            "(e.g. cushioned shoes for long runs). Prices are USD. "
+            "Returns matching products with variants."
         ),
     ),
     pydantic_function_tool(
-        SearchCategoryArgs,
-        name="search_category",
+        FilterProductsArgs,
+        name="filter_products",
         description=(
-            "List products in a catalog category (Running, Sneakers, Boots, or Sandals). "
-            "Use when the user asks for a type of footwear such as running shoes, boots, "
-            "sneakers, or sandals. Prices are USD. Returns a list of products with variants."
+            "Browse the catalog with filters only (category, max price, size, stock). "
+            "Use when the user wants a category or constraints without a free-text intent. "
+            "Returns products with matching variants."
+        ),
+    ),
+    pydantic_function_tool(
+        SemanticSearchArgs,
+        name="semantic_search",
+        description=(
+            "Semantic (vector) search over product descriptions. "
+            "Use for natural-language shopping intent. Pure similarity — no price/category filters. "
+            "Returns the top matching products with variants."
+        ),
+    ),
+    pydantic_function_tool(
+        GetProductArgs,
+        name="get_product",
+        description=(
+            "Fetch a single product and all of its variants by product id (e.g. prod_001). "
+            "Use when the user asks about a known product."
+        ),
+    ),
+    pydantic_function_tool(
+        CheckStockArgs,
+        name="check_stock",
+        description=(
+            "Check inventory for an exact variant SKU. "
+            "Returns sku, product name, inventory count, and in_stock."
         ),
     ),
     pydantic_function_tool(
@@ -118,7 +193,10 @@ TOOLS = [
 
 _ARG_MODELS = {
     "search_products": SearchProductsArgs,
-    "search_category": SearchCategoryArgs,
+    "filter_products": FilterProductsArgs,
+    "semantic_search": SemanticSearchArgs,
+    "get_product": GetProductArgs,
+    "check_stock": CheckStockArgs,
     "add_to_cart": AddToCartArgs,
     "calculate_cart_total": CalculateCartTotalArgs,
 }
@@ -128,10 +206,9 @@ def _error(error: str, message: str) -> dict:
     return {"ok": False, "error": error, "message": message}
 
 
-def _run_search_products(args: SearchProductsArgs) -> list[dict]:
+def _run_filter_products(args: FilterProductsArgs) -> list[dict]:
     category = args.category.value if args.category is not None else None
-    return catalog.search_products(
-        args.query,
+    return catalog.filter_products(
         category=category,
         max_price=args.max_price,
         size=args.size,
@@ -139,13 +216,35 @@ def _run_search_products(args: SearchProductsArgs) -> list[dict]:
     )
 
 
-def _run_search_category(args: SearchCategoryArgs) -> list[dict]:
-    return catalog.search_category(
-        args.category.value,
+def _run_semantic_search(args: SemanticSearchArgs) -> list[dict]:
+    return catalog.semantic_search(args.query, limit=args.limit)
+
+
+def _run_search_products(args: SearchProductsArgs) -> list[dict]:
+    category = args.category.value if args.category is not None else None
+    return catalog.search_products(
+        args.mode.value,
+        query=args.query,
+        category=category,
         max_price=args.max_price,
         size=args.size,
         in_stock_only=args.in_stock_only,
+        limit=args.limit,
     )
+
+
+def _run_get_product(args: GetProductArgs) -> dict:
+    product = catalog.get_product(args.product_id)
+    if product is None:
+        return _error("unknown_product", f"No product found for id {args.product_id!r}.")
+    return product
+
+
+def _run_check_stock(args: CheckStockArgs) -> dict:
+    stock = catalog.check_stock(args.sku)
+    if stock is None:
+        return _error("unknown_sku", f"No product variant found for SKU {args.sku!r}.")
+    return stock
 
 
 def _run_add_to_cart(args: AddToCartArgs, session_cart: list[dict]) -> dict:
@@ -192,8 +291,14 @@ def execute_tool(name: str, arguments, session_cart: list[dict]):
 
     if name == "search_products":
         return _run_search_products(args)
-    if name == "search_category":
-        return _run_search_category(args)
+    if name == "filter_products":
+        return _run_filter_products(args)
+    if name == "semantic_search":
+        return _run_semantic_search(args)
+    if name == "get_product":
+        return _run_get_product(args)
+    if name == "check_stock":
+        return _run_check_stock(args)
     if name == "add_to_cart":
         return _run_add_to_cart(args, session_cart)
     if name == "calculate_cart_total":

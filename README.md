@@ -10,9 +10,15 @@ This project was made as part of the training program on Agents, FastAPI and Str
 cp .env.example .env
 # Edit .env and add your OPENAI_API_KEY
 
+docker compose up -d
 pip install -r requirements.txt
+python -m shopagent.seed
 python -m shopagent
 ```
+
+Compose starts Postgres with pgvector. The app runs on the host: seed the catalog from `data/catalog.json` (which also refreshes OpenAI embeddings), then start the CLI.
+
+Re-run `python -m shopagent.seed` whenever you change `data/catalog.json` (it always refreshes embeddings).
 
 ## Configuration
 
@@ -22,7 +28,9 @@ All settings live in `.env` (see `.env.example`):
 |----------|-------------|
 | `OPENAI_API_KEY` | Your OpenAI API key (required) |
 | `OPENAI_MODEL` | Model name: `gpt-4.1-mini` (default), `gpt-4.1`, `gpt-4.1-nano`, `gpt-4o`, or `gpt-4o-mini` |
-| `TEMPERATURE` | Sampling temperature (default `0.7`). |
+| `TEMPERATURE` | Sampling temperature (default `0.7`) |
+| `DATABASE_URL` | Postgres URL (default uses `localhost` against Compose `db`) |
+| `OPENAI_EMBEDDING_MODEL` | Embedding model for semantic search (default `text-embedding-3-small`) |
 
 ### Supported models and pricing
 
