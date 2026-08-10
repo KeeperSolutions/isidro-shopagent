@@ -18,6 +18,8 @@ python -m shopagent
 
 Compose starts Postgres with pgvector. The app runs on the host: seed the catalog from `data/catalog.json` (which also refreshes OpenAI embeddings), then start the CLI.
 
+`python -m shopagent` starts a stdio MCP child (`shopagent.mcp_server`) and the agent dynamically loads catalog/cart tools from that server. Product and cart answers go only through MCP — the CLI does not call the catalog directly.
+
 Re-run `python -m shopagent.seed` whenever you change `data/catalog.json` (it always refreshes embeddings).
 
 ## Configuration
@@ -50,7 +52,9 @@ The GPT-5 family uses controls such as `reasoning_effort` and `verbosity` instea
 
 ## MCP server (stdio)
 
-ShopAgent can run as an [MCP](https://modelcontextprotocol.io/) server that exposes the catalog and cart tools (`filter_products`, `semantic_search`, `get_product`, `check_stock`, `add_to_cart`, `calculate_cart_total`) over stdio. The cart is in-memory for the life of the process.
+ShopAgent runs as an [MCP](https://modelcontextprotocol.io/) server that exposes the catalog and cart tools (`filter_products`, `semantic_search`, `get_product`, `check_stock`, `add_to_cart`, `calculate_cart_total`) over stdio. The cart is in-memory for the life of the process.
+
+The CLI agent connects to this server automatically (one child process per session), lists tools via MCP, and invokes them with `call_tool`. You can also talk to the same server from the MCP Inspector.
 
 Prerequisites are the same as the CLI: Compose DB up, catalog seeded, and `.env` configured (`DATABASE_URL` required; `OPENAI_API_KEY` required for semantic search). You also need `npx` on your `PATH` (Node.js) for the Inspector UI.
 

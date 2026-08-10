@@ -2,6 +2,9 @@
 
 import json
 
+from mcp import Client
+from mcp.types import TextContent
+
 from shopagent import costs, display
 from shopagent.openai_client import (
     function_call_for_input,
@@ -13,7 +16,6 @@ from shopagent.openai_client import (
     format_response_usage,
 )
 from shopagent.prompts import DELIMITER, SYSTEM_PROMPT
-from shopagent.tools import TOOLS, execute_tool
 
 MAX_TOOL_ROUNDS = 5
 
@@ -45,9 +47,17 @@ def _finalize_reply(client, settings, input_items, message_usage):
     return message_usage
 
 
-def handle_user_message(input_items, client, settings, user_text, cart):
+async def handle_user_message(
+    input_items,
+    client,
+    settings,
+    user_text,
+    mcp_client: Client,
+    tools: list,
+):
     """Handle one user message: moderate, tool loop, then streamed reply.
 
+    Tools are discovered and called only through the MCP client.
     Returns None if the message is blocked by moderation.
     """
     sanitized = user_text.replace(DELIMITER, "")
@@ -70,7 +80,7 @@ def handle_user_message(input_items, client, settings, user_text, cart):
             settings,
             input_items,
             SYSTEM_PROMPT,
-            tools=TOOLS,
+            tools=tools,
         )
         costs.add_usage(message_usage, format_response_usage(response))
 
@@ -81,14 +91,25 @@ def handle_user_message(input_items, client, settings, user_text, cart):
         for call in function_calls:
             input_items.append(function_call_for_input(call))
 
-            parsed_args = getattr(call, "parsed_arguments", None)
-            arguments = parsed_args if parsed_args is not None else call.arguments
-            result = execute_tool(call.name, arguments, cart)
+            arguments = call.arguments
+            if isinstance(arguments, str):
+                arguments = json.loads(arguments)
+
+            mcp_result = await mcp_client.call_tool(call.name, arguments)
+
+            if mcp_result.structured_content is not None:
+                result = json.dumps(mcp_result.structured_content)
+            else:
+                result = "\n".join(
+                    block.text
+                    for block in mcp_result.content
+                    if isinstance(block, TextContent)
+                )
 
             input_items.append({
                 "type": "function_call_output",
                 "call_id": call.call_id,
-                "output": json.dumps(result),
+                "output": result,
             })
 
     # If we get here, we exceeded the max number of tool rounds.
