@@ -47,3 +47,29 @@ Pricing is defined in `config.py` (USD per 1M tokens). These models support the 
 ## Note on GPT-5 and temperature
 
 The GPT-5 family uses controls such as `reasoning_effort` and `verbosity` instead of allowing to tune with temperature. Attempting to set a non-default temperature on GPT-5 models will result in an "Unsupported parameter" error.
+
+## MCP server (stdio)
+
+ShopAgent can run as an [MCP](https://modelcontextprotocol.io/) server that exposes the catalog and cart tools (`filter_products`, `semantic_search`, `get_product`, `check_stock`, `add_to_cart`, `calculate_cart_total`) over stdio. The cart is in-memory for the life of the process.
+
+Prerequisites are the same as the CLI: Compose DB up, catalog seeded, and `.env` configured (`DATABASE_URL` required; `OPENAI_API_KEY` required for semantic search). You also need `npx` on your `PATH` (Node.js) for the Inspector UI.
+
+### MCP Inspector
+
+```bash
+pip install -r requirements.txt
+npx @modelcontextprotocol/inspector
+```
+
+Open the URL printed in the terminal, then use **Add server** with:
+
+| Field | Value |
+|-------|--------|
+| Server ID | `shopagent` |
+| Transport | `stdio (local process)` |
+| Command | absolute path to your venv Python, e.g. `/path/to/shop-agent/.venv/bin/python` |
+| Arguments | one per line: `-m` then `shopagent.mcp_server` |
+| Environment | one `KEY=VALUE` per line — at least `DATABASE_URL=...` and `OPENAI_API_KEY=...` (same values as `.env`) |
+| Working directory | absolute path to the repo root, e.g. `/path/to/shop-agent` |
+
+After **Add**, connect to the server, open **Tools**, and try `filter_products` (`category=Running`), then `add_to_cart` / `calculate_cart_total`.

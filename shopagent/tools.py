@@ -2,7 +2,7 @@ import json
 from enum import Enum
 
 from openai import pydantic_function_tool
-from pydantic import BaseModel, Field, ValidationError, model_validator
+from pydantic import BaseModel, Field, ValidationError
 
 from shopagent import cart
 from shopagent import catalog
@@ -13,11 +13,6 @@ class Category(str, Enum):
     Sneakers = "Sneakers"
     Boots = "Boots"
     Sandals = "Sandals"
-
-
-class SearchMode(str, Enum):
-    filter = "filter"
-    semantic = "semantic"
 
 
 class FilterProductsArgs(BaseModel):
@@ -33,7 +28,7 @@ class FilterProductsArgs(BaseModel):
 
     size: str | None = Field(
         default=None,
-        description='Required size string, e.g. "9" or "10"',
+        description='Size string (e.g. "9" or "10")',
     )
 
     in_stock_only: bool = Field(
@@ -53,50 +48,6 @@ class SemanticSearchArgs(BaseModel):
         le=20,
         description="Maximum number of products to return (default 5)",
     )
-
-
-class SearchProductsArgs(BaseModel):
-    mode: SearchMode = Field(
-        description="Search mode: 'filter' for SQL filters, 'semantic' for vector similarity",
-    )
-
-    query: str | None = Field(
-        default=None,
-        description="Required for semantic mode: natural-language search query",
-    )
-
-    category: Category | None = Field(
-        default=None,
-        description="Filter mode: exact category (Running, Sneakers, Boots, or Sandals)",
-    )
-
-    max_price: float | None = Field(
-        default=None,
-        description="Filter mode: maximum price (USD)",
-    )
-
-    size: str | None = Field(
-        default=None,
-        description='Filter mode: required size string (e.g. "9" or "10")',
-    )
-
-    in_stock_only: bool = Field(
-        default=True,
-        description="Filter mode: when true, only variants with inventory > 0",
-    )
-
-    limit: int = Field(
-        default=5,
-        ge=1,
-        le=20,
-        description="Semantic mode: max products to return (default 5)",
-    )
-
-    @model_validator(mode="after")
-    def validate_mode_args(self):
-        if self.mode == SearchMode.semantic and (not self.query or not self.query.strip()):
-            raise ValueError("query is required when mode is 'semantic'")
-        return self
 
 
 class GetProductArgs(BaseModel):
@@ -128,16 +79,6 @@ class CalculateCartTotalArgs(BaseModel):
 
 
 TOOLS = [
-    pydantic_function_tool(
-        SearchProductsArgs,
-        name="search_products",
-        description=(
-            "Search the catalog. Use mode='filter' for category/price/size/stock filters. "
-            "Use mode='semantic' with a natural-language query for similarity search "
-            "(e.g. cushioned shoes for long runs). Prices are USD. "
-            "Returns matching products with variants."
-        ),
-    ),
     pydantic_function_tool(
         FilterProductsArgs,
         name="filter_products",
@@ -192,7 +133,6 @@ TOOLS = [
 ]
 
 _ARG_MODELS = {
-    "search_products": SearchProductsArgs,
     "filter_products": FilterProductsArgs,
     "semantic_search": SemanticSearchArgs,
     "get_product": GetProductArgs,
@@ -218,19 +158,6 @@ def _run_filter_products(args: FilterProductsArgs) -> list[dict]:
 
 def _run_semantic_search(args: SemanticSearchArgs) -> list[dict]:
     return catalog.semantic_search(args.query, limit=args.limit)
-
-
-def _run_search_products(args: SearchProductsArgs) -> list[dict]:
-    category = args.category.value if args.category is not None else None
-    return catalog.search_products(
-        args.mode.value,
-        query=args.query,
-        category=category,
-        max_price=args.max_price,
-        size=args.size,
-        in_stock_only=args.in_stock_only,
-        limit=args.limit,
-    )
 
 
 def _run_get_product(args: GetProductArgs) -> dict:
@@ -289,8 +216,6 @@ def execute_tool(name: str, arguments, session_cart: list[dict]):
     except (ValidationError, json.JSONDecodeError) as exc:
         return _error("invalid_arguments", str(exc))
 
-    if name == "search_products":
-        return _run_search_products(args)
     if name == "filter_products":
         return _run_filter_products(args)
     if name == "semantic_search":

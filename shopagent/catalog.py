@@ -2,12 +2,8 @@
 
 from __future__ import annotations
 
-from typing import Literal
-
 from shopagent.db import get_connection
 from shopagent.embeddings import embed_query, create_vector_string
-
-SearchMode = Literal["filter", "semantic"]
 
 
 def _format_variant(row: dict) -> dict:
@@ -164,30 +160,6 @@ def semantic_search(query: str, *, limit: int = 5) -> list[dict]:
         _format_product(product, variants_by_product.get(product["id"], []))
         for product in products
     ]
-
-
-def search_products(
-    mode: SearchMode,
-    *,
-    query: str | None = None,
-    category: str | None = None,
-    max_price: float | None = None,
-    size: str | None = None,
-    in_stock_only: bool = True,
-    limit: int = 5,
-) -> list[dict]:
-    """Thin dispatcher over filter_products and semantic_search."""
-    if mode == "filter":
-        return filter_products(
-            category=category,
-            max_price=max_price,
-            size=size,
-            in_stock_only=in_stock_only,
-        )
-    if mode == "semantic":
-        if not query or not query.strip():
-            raise ValueError("query is required when mode is 'semantic'")
-        return semantic_search(query, limit=limit)
 
 
 def get_product(product_id: str) -> dict | None:
