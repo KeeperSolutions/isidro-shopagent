@@ -25,6 +25,25 @@ Compose starts Postgres with pgvector. The app runs on the host: seed the catalo
 
 Re-run `python -m shopagent.seed` whenever you change `data/catalog.json` (it always refreshes embeddings).
 
+## HTTP API (cart & orders)
+
+With Compose running and the catalog seeded:
+
+```bash
+fastapi dev
+```
+
+Docs: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/` | Hello message |
+| POST | `/cart` | Create a new cart |
+| GET | `/cart/{cart_id}` | View a cart |
+| POST | `/cart/{cart_id}/items` | Add a variant by SKU |
+| POST | `/orders` | Checkout a cart (`{"cart_id": "..."}`) — starts as `pending` |
+| GET | `/orders/{order_id}` | Fetch an order |
+
 ## Configuration
 
 All settings live in `.env` (see `.env.example`):
