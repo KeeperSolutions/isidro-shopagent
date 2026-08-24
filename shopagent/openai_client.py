@@ -1,3 +1,11 @@
+import time
+
+from openai import PermissionDeniedError
+
+_MODERATION_MAX_ATTEMPTS = 3
+_MODERATION_RETRY_DELAY_SECONDS = 0.5
+
+
 def create_client(settings):
     from openai import OpenAI
 
@@ -5,12 +13,22 @@ def create_client(settings):
 
 
 def moderate_text(client, text):
-    """Calls the Moderation API and returns the first result."""
-    response = client.moderations.create(
-        model="omni-moderation-latest",
-        input=text,
-    )
-    return response.results[0]
+    """Calls the Moderation API and returns the first result.
+
+    Retries up to 3 times on intermittent 403 PermissionDeniedError responses.
+    """
+    for attempt in range(1, _MODERATION_MAX_ATTEMPTS + 1):
+        try:
+            response = client.moderations.create(
+                model="omni-moderation-latest",
+                input=text,
+            )
+            return response.results[0]
+        except PermissionDeniedError:
+            if attempt == _MODERATION_MAX_ATTEMPTS:
+                raise
+            time.sleep(_MODERATION_RETRY_DELAY_SECONDS)
+    raise RuntimeError("moderation retries exhausted without a response")
 
 
 def _response_kwargs(

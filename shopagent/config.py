@@ -27,7 +27,7 @@ def load_settings():
     if not database_url:
         raise RuntimeError("DATABASE_URL is not set. Copy .env.example to .env and set the Postgres URL.")
 
-    temperature = float(os.getenv("TEMPERATURE", 0.7))
+    temperature = float(os.getenv("TEMPERATURE", "0.7"))
     model = os.getenv("OPENAI_MODEL", DEFAULT_MODEL)
     embedding_model = os.getenv("OPENAI_EMBEDDING_MODEL", DEFAULT_EMBEDDING_MODEL)
     input_price, output_price = PRICING.get(model, FALLBACK_PRICING)

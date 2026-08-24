@@ -10,6 +10,9 @@ This project was made as part of the training program on Agents, FastAPI and Str
 cp .env.example .env
 # Edit .env and add your OPENAI_API_KEY
 
+python -m venv .venv
+source .venv/bin/activate
+
 docker compose up -d
 pip install -r requirements.txt
 python -m shopagent.seed
@@ -61,6 +64,8 @@ Prerequisites are the same as the CLI: Compose DB up, catalog seeded, and `.env`
 ### MCP Inspector
 
 ```bash
+python -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 npx @modelcontextprotocol/inspector
 ```
