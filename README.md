@@ -27,11 +27,19 @@ Re-run `python -m shopagent.seed` whenever you change `data/catalog.json` (it al
 
 ## HTTP API (cart & orders)
 
-With Compose running and the catalog seeded:
+With Compose running and the catalog seeded, create an API key (the plaintext value is shown once; only a SHA-256 hash is stored):
+
+```bash
+python -m shopagent.create_api_key
+```
+
+Then:
 
 ```bash
 fastapi dev
 ```
+
+Cart and order endpoints require the `X-API-Key` header. Each key may have **one active cart** at a time and can only read carts and orders it owns.
 
 Docs: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
 
@@ -39,8 +47,9 @@ Docs: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
 |--------|------|-------------|
 | GET | `/` | Hello message |
 | POST | `/cart` | Create a new cart |
-| GET | `/cart/{cart_id}` | View a cart |
-| POST | `/cart/{cart_id}/items` | Add a variant by SKU |
+| GET | `/cart` | View your active cart |
+| GET | `/cart/{cart_id}` | View a cart owned by this key |
+| POST | `/cart/{cart_id}/items` | Add a variant by SKU to your active cart |
 | POST | `/orders` | Checkout a cart (`{"cart_id": "..."}`) — starts as `pending` |
 | GET | `/orders/{order_id}` | Fetch an order |
 

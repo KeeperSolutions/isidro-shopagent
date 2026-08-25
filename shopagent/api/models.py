@@ -5,6 +5,12 @@ from uuid import UUID, uuid4
 from sqlmodel import Field, SQLModel
 
 
+class ApiKey(SQLModel, table=True):
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
+    key_hash: str = Field(max_length=64, unique=True, index=True)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+
 class CartStatus(str, Enum):
     active = "active"
     checked_out = "checked_out"
@@ -25,6 +31,7 @@ class CartBase(SQLModel):
 class Cart(CartBase, table=True):
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     status: CartStatus = Field(default=CartStatus.active)
+    api_key_id: UUID | None = Field(default=None, foreign_key="apikey.id", index=True)
 
 
 # Cart Item Models

@@ -17,6 +17,7 @@ dependencies = [
 [project.scripts]
 shopagent = "shopagent.main:run"
 shopagent-mcp = "shopagent.mcp_server:main"
+shopagent-create-api-key = "shopagent.create_api_key:main"
 
 [tool.fastapi]
 entrypoint = "shopagent.api.main:app"
