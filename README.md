@@ -53,6 +53,16 @@ Docs: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
 | POST | `/orders` | Checkout a cart (`{"cart_id": "..."}`) — starts as `pending` |
 | GET | `/orders/{order_id}` | Fetch an order |
 | POST | `/checkout` | Create a Stripe Checkout Session for a pending order (`{"order_id": "..."}`) |
+| POST | `/webhooks/stripe` | Stripe webhooks |
+
+Forward local events with the Stripe CLI:
+
+```bash
+stripe listen --forward-to localhost:8000/webhooks/stripe
+# put the printed whsec_... into .env as STRIPE_WEBHOOK_SECRET
+```
+
+Handled events: `checkout.session.completed`, `payment_intent.succeeded`.
 
 ## Configuration
 
@@ -66,6 +76,7 @@ All settings live in `.env` (see `.env.example`):
 | `DATABASE_URL` | Postgres URL (default uses `localhost` against Compose `db`) |
 | `OPENAI_EMBEDDING_MODEL` | Embedding model for semantic search (default `text-embedding-3-small`) |
 | `STRIPE_SECRET_KEY` | Stripe secret key (test-mode `sk_test_...`; Checkout Sessions and catalog Product/Price sync) |
+| `STRIPE_WEBHOOK_SECRET` | Webhook signing secret (`whsec_...`) for `POST /webhooks/stripe` |
 
 ### Supported models and pricing
 
