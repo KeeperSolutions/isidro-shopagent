@@ -3,7 +3,7 @@
   "currency": "USD",
   "products": [
     {
-      "id": "prod_001",
+      "id": "fc200bac-dd85-42a6-a381-383b6d19abc6",
       "name": "Stride Lite Runner",
       "description": "Lightweight daily trainer with a responsive foam midsole and breathable mesh upper for easy miles.",
       "category": "Running",
@@ -28,7 +28,7 @@
           "sku": "AS-SLR-WHT-9",
           "size": "9",
           "color": "White",
-          "price": 118.0,
+          "price": 123.0,
           "inventory": 18
         },
         {
@@ -42,13 +42,13 @@
           "sku": "AS-SLR-WHT-11",
           "size": "11",
           "color": "White",
-          "price": 118.0,
+          "price": 128.0,
           "inventory": 0
         }
       ]
     },
     {
-      "id": "prod_002",
+      "id": "8ecfc567-014a-4252-9103-abffa7cbc493",
       "name": "Tempo Carbon Racer",
       "description": "Race-day shoe with a carbon plate and aggressive rocker for fast road efforts and PRs.",
       "category": "Running",
@@ -59,14 +59,14 @@
           "sku": "AS-TCR-ORG-8",
           "size": "8",
           "color": "Orange",
-          "price": 249.0,
+          "price": 259.0,
           "inventory": 6
         },
         {
           "sku": "AS-TCR-ORG-9",
           "size": "9",
           "color": "Orange",
-          "price": 249.0,
+          "price": 259.0,
           "inventory": 9
         },
         {
@@ -87,13 +87,13 @@
           "sku": "AS-TCR-ORG-11",
           "size": "11",
           "color": "Orange",
-          "price": 249.0,
+          "price": 267.0,
           "inventory": 3
         }
       ]
     },
     {
-      "id": "prod_003",
+      "id": "28506a42-3cac-48ac-9ed6-009d2ad25883",
       "name": "TrailPeak Summit GTX",
       "description": "Waterproof trail runner with sticky rubber lugs and a protective toe cap for wet, rocky terrain.",
       "category": "Running",
@@ -118,27 +118,27 @@
           "sku": "TP-SGT-GRN-9",
           "size": "9",
           "color": "Green",
-          "price": 158.0,
+          "price": 163.0,
           "inventory": 12
         },
         {
           "sku": "TP-SGT-GRN-10",
           "size": "10",
           "color": "Green",
-          "price": 158.0,
+          "price": 163.0,
           "inventory": 8
         },
         {
           "sku": "TP-SGT-GRY-12",
           "size": "12",
           "color": "Gray",
-          "price": 160.0,
+          "price": 163.0,
           "inventory": 4
         }
       ]
     },
     {
-      "id": "prod_004",
+      "id": "c9230a70-7ceb-4823-91a9-d98179d9e6f1",
       "name": "Cloudstep Cushion Plus",
       "description": "Max-cushion road shoe built for long easy runs and recovery days. Soft landing, smooth ride.",
       "category": "Running",
@@ -163,27 +163,27 @@
           "sku": "SF-CCP-PNK-9",
           "size": "9",
           "color": "Pink",
-          "price": 139.0,
+          "price": 144.0,
           "inventory": 11
         },
         {
           "sku": "SF-CCP-PNK-10",
           "size": "10",
           "color": "Pink",
-          "price": 139.0,
+          "price": 144.0,
           "inventory": 7
         },
         {
           "sku": "SF-CCP-NVY-11",
           "size": "11",
           "color": "Navy",
-          "price": 139.0,
+          "price": 144.0,
           "inventory": 9
         }
       ]
     },
     {
-      "id": "prod_005",
+      "id": "5be7c40d-f3ba-4476-8d79-58df48fb1461",
       "name": "Velocity Knit Trainer",
       "description": "Sock-fit knit upper with a flexible midsole for tempo workouts and everyday training.",
       "category": "Running",
@@ -208,14 +208,14 @@
           "sku": "UT-VKT-RED-9",
           "size": "9",
           "color": "Red",
-          "price": 98.0,
+          "price": 103.0,
           "inventory": 8
         },
         {
           "sku": "UT-VKT-RED-10",
           "size": "10",
           "color": "Red",
-          "price": 98.0,
+          "price": 103.0,
           "inventory": 6
         },
         {
@@ -228,7 +228,7 @@
       ]
     },
     {
-      "id": "prod_006",
+      "id": "b71fab14-1ae1-480b-b6ff-c87df6664145",
       "name": "TrailPeak Ridge Grip",
       "description": "Rugged trail shoe with reinforced sidewalls and deep multidirectional lugs for steep descents.",
       "category": "Running",
@@ -273,7 +273,7 @@
       ]
     },
     {
-      "id": "prod_007",
+      "id": "6fcb4d58-35e9-4b11-afe1-40a9b696dd66",
       "name": "Aero Bounce Distance",
       "description": "Balanced cushioning and a wide platform for marathon training blocks and long weekend runs.",
       "category": "Running",
@@ -312,13 +312,13 @@
           "sku": "AS-ABD-WHT-11",
           "size": "11",
           "color": "White",
-          "price": 129.0,
+          "price": 134.0,
           "inventory": 0
         }
       ]
     },
     {
-      "id": "prod_008",
+      "id": "c31eba40-acea-4a73-9b33-b6f9c0e224c6",
       "name": "Harbor Lane Coast Run",
       "description": "Minimalist road shoe with a flexible sole and quick-dry upper for warm-weather miles.",
       "category": "Running",
@@ -363,7 +363,7 @@
       ]
     },
     {
-      "id": "prod_009",
+      "id": "8177ec87-9409-467e-9496-913dedd8590d",
       "name": "Everyday Court Classic",
       "description": "Clean low-top leather sneaker with a cushioned insole and gum rubber outsole for daily wear.",
       "category": "Sneakers",
@@ -408,7 +408,7 @@
       ]
     },
     {
-      "id": "prod_010",
+      "id": "acf198b7-4178-4ba2-8e7e-c5ba6bf401f8",
       "name": "Canvas Low-Top",
       "description": "Classic vulcanized canvas sneaker with a durable toe cap and easy lace-up fit.",
       "category": "Sneakers",
@@ -453,7 +453,7 @@
       ]
     },
     {
-      "id": "prod_011",
+      "id": "eeef4bf9-d9b4-47fb-8bdd-573ce38e23b5",
       "name": "Retro Court Mid",
       "description": "80s-inspired mid-top with padded collar, perforated toe box, and contrast heel tab.",
       "category": "Sneakers",
@@ -478,14 +478,14 @@
           "sku": "AS-RCM-BLK-9",
           "size": "9",
           "color": "Black/Gold",
-          "price": 94.0,
+          "price": 102.0,
           "inventory": 13
         },
         {
           "sku": "AS-RCM-BLK-10",
           "size": "10",
           "color": "Black/Gold",
-          "price": 94.0,
+          "price": 102.0,
           "inventory": 9
         },
         {
@@ -498,7 +498,7 @@
       ]
     },
     {
-      "id": "prod_012",
+      "id": "f5acbe1b-6ce4-4467-9c53-f4f83a29c2c1",
       "name": "SoftForm Knit Slip-On",
       "description": "Sock-like knit slip-on with a memory-foam footbed. No laces, all-day comfort.",
       "category": "Sneakers",
@@ -543,7 +543,7 @@
       ]
     },
     {
-      "id": "prod_013",
+      "id": "5c00e3ca-abe2-491a-b137-59fe5ea51093",
       "name": "Platform Chunky Sneaker",
       "description": "Bold chunky sole with a leather and suede upper. Statement sneaker for casual outfits.",
       "category": "Sneakers",
@@ -568,7 +568,7 @@
           "sku": "BC-PCS-PNK-8",
           "size": "8",
           "color": "Pink",
-          "price": 110.0,
+          "price": 115.0,
           "inventory": 7
         },
         {
@@ -582,13 +582,13 @@
           "sku": "BC-PCS-PNK-9",
           "size": "9",
           "color": "Pink",
-          "price": 110.0,
+          "price": 115.0,
           "inventory": 5
         }
       ]
     },
     {
-      "id": "prod_014",
+      "id": "96ba9888-39eb-4bd8-9140-26cdd036e9f1",
       "name": "Suede Skate Low",
       "description": "Durable suede skate shoe with a vulcanized sole and reinforced ollie area.",
       "category": "Sneakers",
@@ -633,7 +633,7 @@
       ]
     },
     {
-      "id": "prod_015",
+      "id": "01023c0f-3fe3-49c9-a0b8-c151d028af28",
       "name": "Leather Cupsole Sneaker",
       "description": "Full-grain leather cupsole with a clean profile and removable orthotic-friendly insole.",
       "category": "Sneakers",
@@ -658,14 +658,14 @@
           "sku": "NO-LCS-TAN-9",
           "size": "9",
           "color": "Tan",
-          "price": 128.0,
+          "price": 133.0,
           "inventory": 8
         },
         {
           "sku": "NO-LCS-TAN-10",
           "size": "10",
           "color": "Tan",
-          "price": 128.0,
+          "price": 133.0,
           "inventory": 6
         },
         {
@@ -678,7 +678,7 @@
       ]
     },
     {
-      "id": "prod_016",
+      "id": "dfe341fe-9339-402d-9875-1b7bb4ec5df8",
       "name": "Mesh Runner Lifestyle",
       "description": "Running-inspired lifestyle sneaker with breathable mesh panels and a lightweight foam midsole.",
       "category": "Sneakers",
@@ -723,7 +723,7 @@
       ]
     },
     {
-      "id": "prod_017",
+      "id": "34d6e508-97aa-4b64-8c44-b6c5ed00809e",
       "name": "Chelsea Leather Boot",
       "description": "Pull-on Chelsea boot in full-grain leather with elastic side gores and a weather-ready sole.",
       "category": "Boots",
@@ -734,14 +734,14 @@
           "sku": "NO-CLB-BRN-8",
           "size": "8",
           "color": "Brown",
-          "price": 168.0,
+          "price": 176.0,
           "inventory": 8
         },
         {
           "sku": "NO-CLB-BRN-9",
           "size": "9",
           "color": "Brown",
-          "price": 168.0,
+          "price": 176.0,
           "inventory": 12
         },
         {
@@ -762,13 +762,13 @@
           "sku": "NO-CLB-BRN-11",
           "size": "11",
           "color": "Brown",
-          "price": 168.0,
+          "price": 184.0,
           "inventory": 5
         }
       ]
     },
     {
-      "id": "prod_018",
+      "id": "26b0bcce-2709-446c-8f82-77c2cc0812fb",
       "name": "TrailPeak Hikers",
       "description": "Waterproof mid hiking boot with ankle support, Vibram-style lug sole, and gusseted tongue.",
       "category": "Boots",
@@ -813,7 +813,7 @@
       ]
     },
     {
-      "id": "prod_019",
+      "id": "08af4bde-7376-4751-b69a-c9fa3f8949b3",
       "name": "Workhorse Lace-Up Boot",
       "description": "Oil-tanned leather work boot with a steel shank and slip-resistant outsole for long shifts.",
       "category": "Boots",
@@ -858,7 +858,7 @@
       ]
     },
     {
-      "id": "prod_020",
+      "id": "5d5a05ef-aa90-4888-a1fb-5ec265dd0ca9",
       "name": "Suede Desert Boot",
       "description": "Classic crepe-sole desert boot in soft suede. Unlined for a broken-in feel from day one.",
       "category": "Boots",
@@ -903,7 +903,7 @@
       ]
     },
     {
-      "id": "prod_021",
+      "id": "6da39ab7-c3b1-4270-8bb7-7a2edad93e56",
       "name": "Winter Insulated Boot",
       "description": "Insulated winter boot with a waterproof membrane and deep tread for snow and slush.",
       "category": "Boots",
@@ -942,13 +942,13 @@
           "sku": "TP-WIB-BLK-11",
           "size": "11",
           "color": "Black",
-          "price": 164.0,
+          "price": 174.0,
           "inventory": 0
         }
       ]
     },
     {
-      "id": "prod_022",
+      "id": "232c5c07-4650-43b8-a3da-f32cb7d4fe92",
       "name": "Ankle Heeled Boot",
       "description": "Sleek ankle boot with a block heel and side zip. Dresses up jeans or skirts easily.",
       "category": "Boots",
@@ -993,7 +993,7 @@
       ]
     },
     {
-      "id": "prod_023",
+      "id": "e3f23bab-d026-4feb-a6e6-d8958ac64e47",
       "name": "Rain Rubber Boot",
       "description": "Mid-calf rubber rain boot with a fleece-ready lining and sturdy heel kick for muddy days.",
       "category": "Boots",
@@ -1038,7 +1038,7 @@
       ]
     },
     {
-      "id": "prod_024",
+      "id": "bbc0fe33-8faa-4580-b701-b8e3862d9026",
       "name": "Chukka Leather Boot",
       "description": "Three-eyelet chukka in burnished leather with a stacked heel and leather midsole.",
       "category": "Boots",
@@ -1083,7 +1083,7 @@
       ]
     },
     {
-      "id": "prod_025",
+      "id": "619f12db-c379-40ec-be33-441a83d10db8",
       "name": "TrailPeak Sport Sandal",
       "description": "Adjustable sport sandal with a grippy outsole and quick-dry webbing for rivers and hot trails.",
       "category": "Sandals",
@@ -1128,7 +1128,7 @@
       ]
     },
     {
-      "id": "prod_026",
+      "id": "2a72fb4b-d70a-4179-9f3e-fe5ea739dbc0",
       "name": "Leather Slide Sandal",
       "description": "Minimal leather slide with a contoured footbed and wide strap. Easy pool-to-street option.",
       "category": "Sandals",
@@ -1173,7 +1173,7 @@
       ]
     },
     {
-      "id": "prod_027",
+      "id": "3eb34ec8-6ae4-4d7d-a6f3-50b6d0d47b2e",
       "name": "Cushion Recovery Slide",
       "description": "Plush foam recovery slide for post-run cooldown. Soft straps and a deep heel cup.",
       "category": "Sandals",
@@ -1218,7 +1218,7 @@
       ]
     },
     {
-      "id": "prod_028",
+      "id": "d4206eaa-b767-4f72-bdee-bdcc4e6f93d8",
       "name": "Strappy Summer Sandal",
       "description": "Lightweight multi-strap sandal with a slight wedge and soft footbed for warm-weather days.",
       "category": "Sandals",
@@ -1229,14 +1229,14 @@
           "sku": "BC-SSS-GLD-7",
           "size": "7",
           "color": "Gold",
-          "price": 64.0,
+          "price": 72.0,
           "inventory": 9
         },
         {
           "sku": "BC-SSS-GLD-8",
           "size": "8",
           "color": "Gold",
-          "price": 64.0,
+          "price": 72.0,
           "inventory": 13
         },
         {
@@ -1263,7 +1263,7 @@
       ]
     },
     {
-      "id": "prod_029",
+      "id": "5eaece8d-38a2-44fa-acaf-3f9b74114440",
       "name": "Fisherman Sandal",
       "description": "Closed-toe fisherman sandal in soft leather with an adjustable buckle and cork-blend footbed.",
       "category": "Sandals",
@@ -1308,7 +1308,7 @@
       ]
     },
     {
-      "id": "prod_030",
+      "id": "ed1cab0c-fe62-4a26-b08d-9def5a03e6fc",
       "name": "Flip Flop Essentials",
       "description": "Classic foam flip-flop with a textured footbed and durable thong strap. Packable beach staple.",
       "category": "Sandals",
@@ -1353,7 +1353,7 @@
       ]
     },
     {
-      "id": "prod_031",
+      "id": "137965bd-71ff-4440-8774-917d47cf81c6",
       "name": "Waterproof Adventure Sandal",
       "description": "Rugged adventure sandal with toe protection and drain ports for wet hikes and camp days.",
       "category": "Sandals",

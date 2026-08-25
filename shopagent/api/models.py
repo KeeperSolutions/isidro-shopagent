@@ -95,3 +95,12 @@ class OrderPublic(OrderBase):
 
 class OrderCreate(SQLModel):
     cart_id: UUID
+
+
+class CheckoutCreate(SQLModel):
+    order_id: UUID
+
+
+class CheckoutPublic(SQLModel):
+    session_id: str
+    url: str

@@ -8,7 +8,7 @@ This project was made as part of the training program on Agents, FastAPI and Str
 
 ```bash
 cp .env.example .env
-# Edit .env and add your OPENAI_API_KEY
+# Edit .env and add your OPENAI_API_KEY and STRIPE_SECRET_KEY
 
 python -m venv .venv
 source .venv/bin/activate
@@ -19,11 +19,11 @@ python -m shopagent.seed
 python -m shopagent
 ```
 
-Compose starts Postgres with pgvector. The app runs on the host: seed the catalog from `data/catalog.json` (which also refreshes OpenAI embeddings), then start the CLI.
+Compose starts Postgres with pgvector. The app runs on the host: seed the catalog from `data/catalog.json` (which also refreshes OpenAI embeddings and syncs Products & Prices to Stripe when `STRIPE_SECRET_KEY` is set), then start the CLI.
 
 `python -m shopagent` starts a stdio MCP child (`shopagent.mcp_server`) and the agent dynamically loads catalog/cart tools from that server. Product and cart answers go only through MCP — the CLI does not call the catalog directly.
 
-Re-run `python -m shopagent.seed` whenever you change `data/catalog.json` (it always refreshes embeddings).
+Re-run `python -m shopagent.seed` whenever you change `data/catalog.json` (it always refreshes embeddings, then upserts Stripe Products/Prices keyed by catalog UUID and SKU).
 
 ## HTTP API (cart & orders)
 
@@ -39,7 +39,7 @@ Then:
 fastapi dev
 ```
 
-Cart and order endpoints require the `X-API-Key` header. Each key may have **one active cart** at a time and can only read carts and orders it owns.
+Cart, order, and checkout-create endpoints require the `X-API-Key` header. Each key may have **one active cart** at a time and can only read carts and orders it owns. Stripe redirects the browser to the public success/cancel URLs (no API key).
 
 Docs: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
 
@@ -52,6 +52,7 @@ Docs: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
 | POST | `/cart/{cart_id}/items` | Add a variant by SKU to your active cart |
 | POST | `/orders` | Checkout a cart (`{"cart_id": "..."}`) — starts as `pending` |
 | GET | `/orders/{order_id}` | Fetch an order |
+| POST | `/checkout` | Create a Stripe Checkout Session for a pending order (`{"order_id": "..."}`) |
 
 ## Configuration
 
@@ -64,6 +65,7 @@ All settings live in `.env` (see `.env.example`):
 | `TEMPERATURE` | Sampling temperature (default `0.7`) |
 | `DATABASE_URL` | Postgres URL (default uses `localhost` against Compose `db`) |
 | `OPENAI_EMBEDDING_MODEL` | Embedding model for semantic search (default `text-embedding-3-small`) |
+| `STRIPE_SECRET_KEY` | Stripe secret key (test-mode `sk_test_...`; Checkout Sessions and catalog Product/Price sync) |
 
 ### Supported models and pricing
 
