@@ -1,5 +1,3 @@
-import os
-
 import stripe
 from fastapi import APIRouter, HTTPException
 from stripe.params.checkout import SessionCreateParams, SessionCreateParamsLineItem
@@ -13,18 +11,12 @@ from shopagent.api.models import (
 )
 from shopagent.api.routers.orders import get_order_items, get_owned_order
 from shopagent.db import SessionDep
+from shopagent.stripe_client import get_stripe_client
 
 router = APIRouter(prefix="/checkout", tags=["checkout"])
 
 CHECKOUT_SUCCESS_URL = ("http://127.0.0.1:8000/checkout/success?session_id={CHECKOUT_SESSION_ID}")
 CHECKOUT_CANCEL_URL = "http://127.0.0.1:8000/checkout/cancel"
-
-
-def _stripe_secret_key() -> str:
-    secret = os.getenv("STRIPE_SECRET_KEY")
-    if not secret:
-        raise HTTPException(status_code=503, detail="STRIPE_SECRET_KEY is not set")
-    return secret
 
 
 def _line_items(items: list[OrderItem]) -> list[SessionCreateParamsLineItem]:
@@ -61,7 +53,7 @@ def create_checkout_session(
     if not items:
         raise HTTPException(status_code=400, detail="Order has no items")
 
-    client = stripe.StripeClient(_stripe_secret_key())
+    client = get_stripe_client()
     order_id_str = str(order.id)
     params: SessionCreateParams = {
         "mode": "payment",

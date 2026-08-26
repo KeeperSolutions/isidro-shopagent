@@ -52,6 +52,7 @@ Docs: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
 | POST | `/cart/{cart_id}/items` | Add a variant by SKU to your active cart |
 | POST | `/orders` | Checkout a cart (`{"cart_id": "..."}`) — starts as `pending` |
 | GET | `/orders/{order_id}` | Fetch an order |
+| POST | `/orders/{order_id}/refund` | Full Stripe refund of a `paid` order |
 | POST | `/checkout` | Create a Stripe Checkout Session for a pending order (`{"order_id": "..."}`) |
 | POST | `/webhooks/stripe` | Stripe webhooks |
 

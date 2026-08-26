@@ -21,6 +21,7 @@ class OrderStatus(str, Enum):
     paid = "paid"
     fulfilled = "fulfilled"
     cancelled = "cancelled"
+    refunded = "refunded"
 
 
 # Cart Models
@@ -75,6 +76,7 @@ class OrderBase(SQLModel):
 
 class Order(OrderBase, table=True):
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    stripe_payment_intent_id: str | None = Field(default=None, index=True)
 
 
 class OrderItemBase(SQLModel):
@@ -104,3 +106,8 @@ class CheckoutCreate(SQLModel):
 class CheckoutPublic(SQLModel):
     session_id: str
     url: str
+
+
+class OrderRefundPublic(SQLModel):
+    refund_id: str
+    order: OrderPublic

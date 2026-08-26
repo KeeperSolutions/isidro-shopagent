@@ -1,5 +1,6 @@
 from uuid import UUID
 
+import stripe
 from fastapi import APIRouter, HTTPException
 from sqlmodel import Session, col, select
 
@@ -13,9 +14,12 @@ from shopagent.api.models import (
     OrderItem,
     OrderItemBase,
     OrderPublic,
+    OrderRefundPublic,
+    OrderStatus,
 )
 from shopagent.api.routers.cart import get_cart_items, get_owned_cart
 from shopagent.db import SessionDep
+from shopagent.stripe_client import get_stripe_client
 
 router = APIRouter(prefix="/orders", tags=["orders"])
 
@@ -107,3 +111,39 @@ def create_order(body: OrderCreate, session: SessionDep, api_key: ApiKeyDep):
 def get_order(order_id: UUID, session: SessionDep, api_key: ApiKeyDep):
     order = get_owned_order(session, order_id, api_key)
     return get_order_public(session, order)
+
+
+@router.post("/{order_id}/refund", response_model=OrderRefundPublic)
+def refund_order(order_id: UUID, session: SessionDep, api_key: ApiKeyDep):
+    order = get_owned_order(session, order_id, api_key)
+    if order.status != OrderStatus.paid:
+        raise HTTPException(
+            status_code=409,
+            detail=f"Order cannot be refunded.",
+        )
+    if not order.stripe_payment_intent_id:
+        raise HTTPException(
+            status_code=409,
+            detail="Order has no Stripe payment intent to refund",
+        )
+
+    client = get_stripe_client()
+    try:
+        refund = client.v1.refunds.create(
+            params={
+                "payment_intent": order.stripe_payment_intent_id,
+                "metadata": {"order_id": str(order.id)},
+            }
+        )
+    except stripe.StripeError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+    order.status = OrderStatus.refunded
+    session.add(order)
+    session.commit()
+    session.refresh(order)
+
+    return OrderRefundPublic(
+        refund_id=refund.id,
+        order=get_order_public(session, order),
+    )
