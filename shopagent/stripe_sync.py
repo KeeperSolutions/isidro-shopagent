@@ -91,6 +91,11 @@ def _upsert_price(
         return "created"
 
     if current.unit_amount == unit_amount and (current.currency or "").lower() == currency:
+        if current.nickname != nickname or current.metadata.to_dict() != metadata:
+            client.v1.prices.update(
+                current.id,
+                params={"nickname": nickname, "metadata": metadata},
+            )
         return "unchanged"
 
     replacement = client.v1.prices.create(

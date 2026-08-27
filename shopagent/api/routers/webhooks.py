@@ -38,6 +38,26 @@ def _payment_intent_id(event: stripe.Event) -> str | None:
     return payment_intent.id
 
 
+def _order_id_from_event(event: stripe.Event) -> UUID | None:
+    metadata = getattr(event.data.object, "metadata", None)
+    if not metadata:
+        return None
+    try:
+        order_id_str = metadata["order_id"]
+    except KeyError:
+        return None
+    try:
+        return UUID(str(order_id_str))
+    except (ValueError, TypeError):
+        return None
+
+
+def _is_successful_payment(event: stripe.Event) -> bool:
+    if event.type == "checkout.session.completed":
+        return getattr(event.data.object, "payment_status", None) == "paid"
+    return event.type == "payment_intent.succeeded"
+
+
 @router.post("/stripe")
 async def stripe_webhook(request: Request, session: SessionDep):
     payload = await request.body()
@@ -57,7 +77,15 @@ async def stripe_webhook(request: Request, session: SessionDep):
     if event.type not in HANDLED_EVENTS:
         return {"received": True, "handled": False, "type": event.type}
 
-    order_id = UUID(event.data.object.metadata["order_id"])
+    order_id = _order_id_from_event(event)
+    if order_id is None:
+        return {
+            "received": True,
+            "handled": False,
+            "type": event.type,
+            "reason": "missing or invalid order_id metadata",
+        }
+
     order = session.get(Order, order_id)
 
     # In theory there should always be an order, but we'll check just in case.
@@ -68,6 +96,24 @@ async def stripe_webhook(request: Request, session: SessionDep):
             "type": event.type,
             "order_id": str(order_id),
             "reason": f"Order not found (order_id={order_id})",
+        }
+
+    if not _is_successful_payment(event):
+        return {
+            "received": True,
+            "handled": False,
+            "type": event.type,
+            "order_id": str(order_id),
+            "reason": "payment not successful",
+        }
+
+    if order.status not in {OrderStatus.pending, OrderStatus.paid}:
+        return {
+            "received": True,
+            "handled": False,
+            "type": event.type,
+            "order_id": str(order_id),
+            "reason": f"cannot mark paid (status is {order.status.value})",
         }
 
     payment_intent_id = _payment_intent_id(event)

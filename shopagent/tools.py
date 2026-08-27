@@ -52,7 +52,7 @@ class SemanticSearchArgs(BaseModel):
 
 class GetProductArgs(BaseModel):
     product_id: str = Field(
-        description="Exact product id from a prior search result (e.g. prod_001)",
+        description="Exact product id from a prior search result (e.g. fc200bac-dd85-42a6-a381-383b6d19abc6)",
     )
 
 
@@ -101,7 +101,7 @@ TOOLS = [
         GetProductArgs,
         name="get_product",
         description=(
-            "Fetch a single product and all of its variants by product id (e.g. prod_001). "
+            "Fetch a single product and all of its variants by product id (e.g. fc200bac-dd85-42a6-a381-383b6d19abc6). "
             "Use when the user asks about a known product."
         ),
     ),

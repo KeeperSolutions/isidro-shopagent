@@ -81,10 +81,10 @@ def semantic_search(
 @mcp.tool()
 def get_product(
     product_id: str = Field(
-        description="Exact product id from a prior search result (e.g. prod_001)",
+        description="Exact product id from a prior search result (e.g. fc200bac-dd85-42a6-a381-383b6d19abc6)",
     ),
 ) -> dict:
-    """Fetch a single product and all of its variants by product id (e.g. prod_001)."""
+    """Fetch a single product and all of its variants by product id (e.g. fc200bac-dd85-42a6-a381-383b6d19abc6)."""
     return execute_tool("get_product", {"product_id": product_id}, _cart)
 
 
