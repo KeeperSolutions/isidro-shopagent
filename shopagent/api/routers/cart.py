@@ -5,7 +5,16 @@ from sqlmodel import Session, select
 
 from shopagent import catalog
 from shopagent.api.auth import ApiKeyDep
-from shopagent.api.models import ApiKey, Cart, CartItem, CartItemCreate, CartPublic, CartStatus
+from shopagent.api.models import (
+    ApiKey,
+    Cart,
+    CartItem,
+    CartItemAddPublic,
+    CartItemCreate,
+    CartCreatePublic,
+    CartPublic,
+    CartStatus,
+)
 from shopagent.db import SessionDep
 
 router = APIRouter(prefix="/cart", tags=["cart"])
@@ -48,8 +57,8 @@ def get_owned_cart(session: Session, cart_id: UUID, api_key: ApiKey) -> Cart:
     return cart
 
 
-@router.post("")
-def create_cart(session: SessionDep, api_key: ApiKeyDep):
+@router.post("", response_model=CartCreatePublic)
+def create_cart(session: SessionDep, api_key: ApiKeyDep) -> CartCreatePublic:
     if get_active_cart(session, api_key) is not None:
         raise HTTPException(
             status_code=409,
@@ -60,7 +69,7 @@ def create_cart(session: SessionDep, api_key: ApiKeyDep):
     session.add(cart)
     session.commit()
     session.refresh(cart)
-    return {"cart_id": cart.id}
+    return CartCreatePublic(cart_id=cart.id)
 
 
 @router.get("", response_model=CartPublic)
@@ -75,13 +84,13 @@ def get_cart(cart_id: UUID, session: SessionDep, api_key: ApiKeyDep):
     return CartPublic(id=cart.id, items=get_cart_items(session, cart.id))
 
 
-@router.post("/{cart_id}/items")
+@router.post("/{cart_id}/items", response_model=CartItemAddPublic)
 def add_cart_item(
     cart_id: UUID,
     cart_item: CartItemCreate,
     session: SessionDep,
     api_key: ApiKeyDep,
-):
+) -> CartItemAddPublic:
     cart = get_owned_cart(session, cart_id, api_key)
     if cart.status != CartStatus.active:
         raise HTTPException(status_code=409, detail="Cart is not active")
@@ -120,4 +129,4 @@ def add_cart_item(
     session.commit()
     session.refresh(item)
 
-    return {"added": item, "items": get_cart_items(session, cart_id)}
+    return CartItemAddPublic(added=item, items=get_cart_items(session, cart_id))

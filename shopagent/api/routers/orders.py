@@ -63,7 +63,7 @@ def get_order_public(session: Session, order: Order) -> OrderPublic:
     )
 
 
-@router.post("")
+@router.post("", response_model=OrderPublic)
 def create_order(body: OrderCreate, session: SessionDep, api_key: ApiKeyDep):
     cart = get_owned_cart(session, body.cart_id, api_key)
     if cart.status != CartStatus.active:

@@ -48,10 +48,19 @@ class CartItem(CartItemBase, table=True):
 
 
 class CartItemCreate(CartItemBase):
-    quantity: int = 1
+    quantity: int = Field(default=1, ge=1)
 
 
 class CartPublic(CartBase):
+    items: list[CartItem]
+
+
+class CartCreatePublic(SQLModel):
+    cart_id: UUID
+
+
+class CartItemAddPublic(SQLModel):
+    added: CartItem
     items: list[CartItem]
 
 
