@@ -46,3 +46,6 @@ pip-delete-this-directory.txt
 # OS
 .DS_Store
 Thumbs.db
+
+# Shopper long-term memory
+data/shopper_memory.json

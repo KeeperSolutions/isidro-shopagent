@@ -4,6 +4,7 @@ import stripe
 from fastapi import APIRouter, HTTPException
 from sqlmodel import Session, col, select
 
+from shopagent import catalog
 from shopagent.api.auth import ApiKeyDep
 from shopagent.api.models import (
     ApiKey,
@@ -74,6 +75,25 @@ def create_order(body: OrderCreate, session: SessionDep, api_key: ApiKeyDep):
         raise HTTPException(status_code=409, detail="Cart is not active")
 
     cart_items = get_cart_items(session, cart.id)
+    if not cart_items:
+        raise HTTPException(status_code=400, detail="Cart is empty")
+
+    for item in cart_items:
+        variant = catalog.get_variant_by_sku(item.sku)
+        if variant is None:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Unknown SKU: {item.sku!r}",
+            )
+        if item.quantity > variant["inventory"]:
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    f"Only {variant['inventory']} in stock for {item.sku}; "
+                    f"cart has {item.quantity}."
+                ),
+            )
+
     item_count = sum(item.quantity for item in cart_items)
     subtotal = sum(item.unit_price * item.quantity for item in cart_items)
 

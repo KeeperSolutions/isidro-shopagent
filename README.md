@@ -16,12 +16,23 @@ source .venv/bin/activate
 docker compose up -d
 pip install -r requirements.txt
 python -m shopagent.seed
+```
+
+Compose starts Postgres with pgvector. The app runs on the host: seed the catalog from `data/catalog.json` (which also refreshes OpenAI embeddings and syncs Products & Prices to Stripe when `STRIPE_SECRET_KEY` is set), then start the HTTP API and the CLI.
+
+Cart and checkout tools call the FastAPI service, so create an API key, put it in `.env` as `SHOPAGENT_API_KEY`, and leave `fastapi dev` running before you start the agent:
+
+```bash
+python -m shopagent.create_api_key
+# paste the printed sa_... value into .env as SHOPAGENT_API_KEY
+
+fastapi dev   # in another terminal
 python -m shopagent
 ```
 
-Compose starts Postgres with pgvector. The app runs on the host: seed the catalog from `data/catalog.json` (which also refreshes OpenAI embeddings and syncs Products & Prices to Stripe when `STRIPE_SECRET_KEY` is set), then start the CLI.
+`python -m shopagent` starts a stdio MCP child (`shopagent.mcp_server`) and the agent dynamically loads catalog, cart, checkout, and memory tools from that server. Product search still goes through MCP to Postgres. Cart, totals, and checkout go through MCP to FastAPI (`SHOPAGENT_API_URL`, default `http://127.0.0.1:8000`).
 
-`python -m shopagent` starts a stdio MCP child (`shopagent.mcp_server`) and the agent dynamically loads catalog/cart tools from that server. Product and cart answers go only through MCP — the CLI does not call the catalog directly.
+The agent keeps short-term cart context in the conversation (a live cart snapshot is injected each turn) and long-term shopper name/preferences in `data/shopper_memory.json`.
 
 Re-run `python -m shopagent.seed` whenever you change `data/catalog.json` (it always refreshes embeddings, then upserts Stripe Products/Prices keyed by catalog UUID and SKU).
 
@@ -50,7 +61,7 @@ Docs: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
 | GET | `/cart` | View your active cart |
 | GET | `/cart/{cart_id}` | View a cart owned by this key |
 | POST | `/cart/{cart_id}/items` | Add a variant by SKU to your active cart |
-| POST | `/orders` | Checkout a cart (`{"cart_id": "..."}`) — starts as `pending` |
+| POST | `/orders` | Create an order from an active cart (`{"cart_id": "..."}`) — rejects an empty cart and re-checks stock; starts as `pending` |
 | GET | `/orders/{order_id}` | Fetch an order |
 | POST | `/orders/{order_id}/refund` | Full Stripe refund of a `paid` order |
 | POST | `/checkout` | Create a Stripe Checkout Session for a pending order (`{"order_id": "..."}`) |
@@ -78,6 +89,8 @@ All settings live in `.env` (see `.env.example`):
 | `OPENAI_EMBEDDING_MODEL` | Embedding model for semantic search (default `text-embedding-3-small`) |
 | `STRIPE_SECRET_KEY` | Stripe secret key (test-mode `sk_test_...`; Checkout Sessions and catalog Product/Price sync) |
 | `STRIPE_WEBHOOK_SECRET` | Webhook signing secret (`whsec_...`) for `POST /webhooks/stripe` |
+| `SHOPAGENT_API_URL` | FastAPI base URL for cart/checkout tools (default `http://127.0.0.1:8000`) |
+| `SHOPAGENT_API_KEY` | API key from `python -m shopagent.create_api_key` (required for cart, totals, and checkout) |
 
 ### Supported models and pricing
 
@@ -97,11 +110,11 @@ The GPT-5 family uses controls such as `reasoning_effort` and `verbosity` instea
 
 ## MCP server (stdio)
 
-ShopAgent runs as an [MCP](https://modelcontextprotocol.io/) server that exposes the catalog and cart tools (`filter_products`, `semantic_search`, `get_product`, `check_stock`, `add_to_cart`, `calculate_cart_total`) over stdio. The cart is in-memory for the life of the process.
+ShopAgent runs as an [MCP](https://modelcontextprotocol.io/) server that exposes catalog, cart, checkout, and memory tools: `filter_products`, `semantic_search`, `get_product`, `check_stock`, `add_to_cart`, `calculate_cart_total`, `checkout`, `save_shopper_memory`. Cart and checkout call the FastAPI service.
 
 The CLI agent connects to this server automatically (one child process per session), lists tools via MCP, and invokes them with `call_tool`. You can also talk to the same server from the MCP Inspector.
 
-Prerequisites are the same as the CLI: Compose DB up, catalog seeded, and `.env` configured (`DATABASE_URL` required; `OPENAI_API_KEY` required for semantic search). You also need `npx` on your `PATH` (Node.js) for the Inspector UI.
+Prerequisites are the same as the CLI: Compose DB up, catalog seeded, FastAPI running, and `.env` configured (`DATABASE_URL` required; `OPENAI_API_KEY` required for semantic search; `SHOPAGENT_API_KEY` required for cart/checkout). You also need `npx` on your `PATH` (Node.js) for the Inspector UI.
 
 ### MCP Inspector
 
@@ -120,7 +133,7 @@ Open the URL printed in the terminal, then use **Add server** with:
 | Transport | `stdio (local process)` |
 | Command | absolute path to your venv Python, e.g. `/path/to/shop-agent/.venv/bin/python` |
 | Arguments | one per line: `-m` then `shopagent.mcp_server` |
-| Environment | one `KEY=VALUE` per line — at least `DATABASE_URL=...` and `OPENAI_API_KEY=...` (same values as `.env`) |
+| Environment | one `KEY=VALUE` per line — at least `DATABASE_URL=...`, `OPENAI_API_KEY=...`, and `SHOPAGENT_API_KEY=...` (same values as `.env`) |
 | Working directory | absolute path to the repo root, e.g. `/path/to/shop-agent` |
 
 After **Add**, connect to the server, open **Tools**, and try `filter_products` (`category=Running`), then `add_to_cart` / `calculate_cart_total`.

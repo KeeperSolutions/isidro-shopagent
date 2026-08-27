@@ -4,8 +4,7 @@ from enum import Enum
 from openai import pydantic_function_tool
 from pydantic import BaseModel, Field, ValidationError
 
-from shopagent import cart
-from shopagent import catalog
+from shopagent import api_client, catalog, memory
 
 
 class Category(str, Enum):
@@ -78,6 +77,39 @@ class CalculateCartTotalArgs(BaseModel):
     """Calculate the current cart and subtotal."""
 
 
+class CheckoutArgs(BaseModel):
+    confirmed: bool = Field(
+        default=False,
+        description=(
+            "Must be true only after the shopper explicitly confirmed they want to pay. "
+            "If false, returns the cart summary and does not create a checkout session."
+        ),
+    )
+
+
+class SaveShopperMemoryArgs(BaseModel):
+    name: str | None = Field(
+        default=None,
+        description="Shopper's name, if they shared it",
+    )
+    preferred_size: str | None = Field(
+        default=None,
+        description='Preferred shoe size (e.g. "9")',
+    )
+    preferred_color: str | None = Field(
+        default=None,
+        description="Preferred color, if they shared one",
+    )
+    preferred_category: str | None = Field(
+        default=None,
+        description="Preferred category: Running, Sneakers, Boots, or Sandals",
+    )
+    notes: str | None = Field(
+        default=None,
+        description="Other lasting preferences to remember across sessions",
+    )
+
+
 TOOLS = [
     pydantic_function_tool(
         FilterProductsArgs,
@@ -130,6 +162,23 @@ TOOLS = [
             "Do not call this right after add_to_cart (that already returns totals)."
         ),
     ),
+    pydantic_function_tool(
+        CheckoutArgs,
+        name="checkout",
+        description=(
+            "Create a Stripe checkout session for the current cart and return the payment URL. "
+            "Call only after the shopper explicitly confirms they want to pay, with confirmed=true. "
+            "Never invent a checkout URL."
+        ),
+    ),
+    pydantic_function_tool(
+        SaveShopperMemoryArgs,
+        name="save_shopper_memory",
+        description=(
+            "Save the shopper's name and lasting preferences (size, color, category, notes) "
+            "so they are remembered in later sessions. Only store what they explicitly shared."
+        ),
+    ),
 ]
 
 _ARG_MODELS = {
@@ -139,6 +188,8 @@ _ARG_MODELS = {
     "check_stock": CheckStockArgs,
     "add_to_cart": AddToCartArgs,
     "calculate_cart_total": CalculateCartTotalArgs,
+    "checkout": CheckoutArgs,
+    "save_shopper_memory": SaveShopperMemoryArgs,
 }
 
 
@@ -174,27 +225,30 @@ def _run_check_stock(args: CheckStockArgs) -> dict:
     return stock
 
 
-def _run_add_to_cart(args: AddToCartArgs, session_cart: list[dict]) -> dict:
-    variant = catalog.get_variant_by_sku(args.sku)
-    if variant is None:
-        return _error("unknown_sku", f"No product variant found for SKU {args.sku!r}.")
-
-    result = cart.add_item(session_cart, variant, args.quantity)
-    if not result["ok"]:
-        return result
-
-    return {
-        "ok": True,
-        "added": result["added"],
-        "cart": cart.cart_summary(session_cart),
-    }
+def _run_add_to_cart(args: AddToCartArgs) -> dict:
+    return api_client.add_cart_item(args.sku, args.quantity)
 
 
-def _run_calculate_cart_total(session_cart: list[dict]) -> dict:
-    return cart.cart_summary(session_cart)
+def _run_calculate_cart_total() -> dict:
+    return api_client.get_cart_summary()
 
 
-def execute_tool(name: str, arguments, session_cart: list[dict]):
+def _run_checkout(args: CheckoutArgs) -> dict:
+    return api_client.checkout(confirmed=args.confirmed)
+
+
+def _run_save_shopper_memory(args: SaveShopperMemoryArgs) -> dict:
+    profile = memory.save_memory(
+        name=args.name,
+        preferred_size=args.preferred_size,
+        preferred_color=args.preferred_color,
+        preferred_category=args.preferred_category,
+        notes=args.notes,
+    )
+    return {"ok": True, "profile": profile}
+
+
+def execute_tool(name: str, arguments):
     """Validate tool arguments and run the matching handler."""
     if name not in _ARG_MODELS:
         return _error("unknown_tool", f"Unknown tool: {name!r}.")
@@ -225,8 +279,12 @@ def execute_tool(name: str, arguments, session_cart: list[dict]):
     if name == "check_stock":
         return _run_check_stock(args)
     if name == "add_to_cart":
-        return _run_add_to_cart(args, session_cart)
+        return _run_add_to_cart(args)
     if name == "calculate_cart_total":
-        return _run_calculate_cart_total(session_cart)
+        return _run_calculate_cart_total()
+    if name == "checkout":
+        return _run_checkout(args)
+    if name == "save_shopper_memory":
+        return _run_save_shopper_memory(args)
 
     return _error("unknown_tool", f"Unknown tool: {name!r}.")

@@ -5,7 +5,7 @@ import json
 from mcp import Client
 from mcp.types import TextContent
 
-from shopagent import costs, display
+from shopagent import api_client, costs, display, memory
 from shopagent.openai_client import (
     function_call_for_input,
     get_assistant_text,
@@ -15,12 +15,16 @@ from shopagent.openai_client import (
     stream_response,
     format_response_usage,
 )
-from shopagent.prompts import DELIMITER, SYSTEM_PROMPT
+from shopagent.prompts import DELIMITER, build_instructions
 
-MAX_TOOL_ROUNDS = 5
+MAX_TOOL_ROUNDS = 8
 
 
-def _finalize_reply(client, settings, input_items, message_usage):
+def _instructions() -> str:
+    return build_instructions(memory.load_memory(), api_client.get_cart_summary())
+
+
+def _finalize_reply(client, settings, input_items, message_usage, instructions):
     """Stream a text reply and show it to the user as it arrives."""
 
     def on_text_delta(delta: str):
@@ -30,7 +34,7 @@ def _finalize_reply(client, settings, input_items, message_usage):
         client,
         settings,
         input_items,
-        SYSTEM_PROMPT,
+        instructions,
         tool_choice="none",
         on_text_delta=on_text_delta,
     )
@@ -75,18 +79,19 @@ async def handle_user_message(
     message_usage = costs.empty_usage()
 
     for _ in range(MAX_TOOL_ROUNDS):
+        instructions = _instructions()
         response = parse_response(
             client,
             settings,
             input_items,
-            SYSTEM_PROMPT,
+            instructions,
             tools=tools,
         )
         costs.add_usage(message_usage, format_response_usage(response))
 
         function_calls = get_function_calls(response)
         if not function_calls:
-            return _finalize_reply(client, settings, input_items, message_usage)
+            return _finalize_reply(client, settings, input_items, message_usage, instructions)
 
         for call in function_calls:
             input_items.append(function_call_for_input(call))
