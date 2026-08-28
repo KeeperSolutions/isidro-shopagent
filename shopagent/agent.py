@@ -11,7 +11,6 @@ from shopagent.openai_client import (
     get_assistant_text,
     get_function_calls,
     moderate_text,
-    parse_response,
     stream_response,
     format_response_usage,
 )
@@ -24,32 +23,7 @@ def _instructions() -> str:
     return build_instructions(memory.load_memory(), api_client.get_cart_summary())
 
 
-def _finalize_reply(client, settings, input_items, message_usage, instructions):
-    """Stream a text reply and show it to the user as it arrives."""
-
-    def on_text_delta(delta: str):
-        display.print_stream_message(delta)
-
-    response = stream_response(
-        client,
-        settings,
-        input_items,
-        instructions,
-        tool_choice="none",
-        on_text_delta=on_text_delta,
-    )
-    costs.add_usage(message_usage, format_response_usage(response))
-
-    text = get_assistant_text(response)
-    if text:
-        display.end_stream_message()
-        input_items.append({"role": "assistant", "content": text})
-        return message_usage, text
-
-    fallback = "I'm sorry, I couldn't put together a reply. Please try again."
-    display.print_stream_message(fallback)
-    display.end_stream_message()
-    return message_usage, fallback
+_FALLBACK_REPLY = "I'm sorry, I couldn't put together a reply. Please try again."
 
 
 async def handle_user_message(
@@ -83,20 +57,30 @@ async def handle_user_message(
 
         for _ in range(MAX_TOOL_ROUNDS):
             instructions = _instructions()
-            response = parse_response(
+
+            response, streamed_text = stream_response(
                 client,
                 settings,
                 input_items,
                 instructions,
                 tools=tools,
+                on_text_delta=display.print_stream_message,
             )
             costs.add_usage(message_usage, format_response_usage(response))
 
             function_calls = get_function_calls(response)
             if not function_calls:
-                message_usage, reply = _finalize_reply(client, settings, input_items, message_usage, instructions)
-                turn.update(output=reply)
+                text = get_assistant_text(response)
+                if not text:
+                    text = _FALLBACK_REPLY
+                    display.print_stream_message(text)
+                display.end_stream_message()
+                input_items.append({"role": "assistant", "content": text})
+                turn.update(output=text)
                 return message_usage
+
+            if streamed_text:
+                display.end_stream_message()
 
             for call in function_calls:
                 input_items.append(function_call_for_input(call))

@@ -168,7 +168,7 @@ TOOLS = [
         description=(
             "Create a Stripe checkout session for the current cart and return the payment URL. "
             "Call only after the shopper explicitly confirms they want to pay, with confirmed=true. "
-            "Never invent a checkout URL."
+            "Never invent a checkout URL. Show the url field to the shopper in full, including any # fragment."
         ),
     ),
     pydantic_function_tool(

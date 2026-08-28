@@ -3,9 +3,10 @@ import asyncio
 from mcp import Client, StdioServerParameters
 from mcp.client.stdio import stdio_client
 
-from shopagent import agent, costs, display, tracing
+from shopagent import agent, costs, display, memory, tracing
 from shopagent.config import load_settings
 from shopagent.openai_client import create_client
+from shopagent.prompts import build_opening_message
 
 
 async def main() -> None:
@@ -13,10 +14,11 @@ async def main() -> None:
     tracing.init_tracing()
     tracing.start_session()
     client = create_client(settings)
+    opening_message = build_opening_message(memory.load_memory())
     input_items = []
     session_usage = costs.empty_usage()
 
-    display.print_welcome()
+    display.print_welcome(opening_message)
 
     server_params = StdioServerParameters(
         command="python",
