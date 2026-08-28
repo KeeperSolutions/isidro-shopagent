@@ -2,12 +2,15 @@ import time
 
 from openai import PermissionDeniedError
 
+from shopagent import tracing
+
 _MODERATION_MAX_ATTEMPTS = 3
 _MODERATION_RETRY_DELAY_SECONDS = 0.5
 
 
 def create_client(settings):
-    from openai import OpenAI
+    tracing.init_tracing()
+    from langfuse.openai import OpenAI
 
     return OpenAI(api_key=settings["api_key"])
 

@@ -5,7 +5,7 @@ import json
 from mcp import Client
 from mcp.types import TextContent
 
-from shopagent import api_client, costs, display, memory
+from shopagent import api_client, costs, display, memory, tracing
 from shopagent.openai_client import (
     function_call_for_input,
     get_assistant_text,
@@ -44,11 +44,12 @@ def _finalize_reply(client, settings, input_items, message_usage, instructions):
     if text:
         display.end_stream_message()
         input_items.append({"role": "assistant", "content": text})
-        return message_usage
+        return message_usage, text
 
-    display.print_stream_message("I'm sorry, I couldn't put together a reply. Please try again.")
+    fallback = "I'm sorry, I couldn't put together a reply. Please try again."
+    display.print_stream_message(fallback)
     display.end_stream_message()
-    return message_usage
+    return message_usage, fallback
 
 
 async def handle_user_message(
@@ -66,57 +67,68 @@ async def handle_user_message(
     """
     sanitized = user_text.replace(DELIMITER, "")
 
-    moderation = moderate_text(client, sanitized)
-    if moderation.flagged:
-        display.print_moderation_message()
-        return None
+    with tracing.start_agent_turn(user_text=sanitized) as turn:
+        moderation = moderate_text(client, sanitized)
+        if moderation.flagged:
+            turn.update(output={"blocked": True, "reason": "moderation"})
+            display.print_moderation_message()
+            return None
 
-    input_items.append({
-        "role": "user",
-        "content": f"{DELIMITER}{sanitized}{DELIMITER}",
-    })
+        input_items.append({
+            "role": "user",
+            "content": f"{DELIMITER}{sanitized}{DELIMITER}",
+        })
 
-    message_usage = costs.empty_usage()
+        message_usage = costs.empty_usage()
 
-    for _ in range(MAX_TOOL_ROUNDS):
-        instructions = _instructions()
-        response = parse_response(
-            client,
-            settings,
-            input_items,
-            instructions,
-            tools=tools,
-        )
-        costs.add_usage(message_usage, format_response_usage(response))
+        for _ in range(MAX_TOOL_ROUNDS):
+            instructions = _instructions()
+            response = parse_response(
+                client,
+                settings,
+                input_items,
+                instructions,
+                tools=tools,
+            )
+            costs.add_usage(message_usage, format_response_usage(response))
 
-        function_calls = get_function_calls(response)
-        if not function_calls:
-            return _finalize_reply(client, settings, input_items, message_usage, instructions)
+            function_calls = get_function_calls(response)
+            if not function_calls:
+                message_usage, reply = _finalize_reply(client, settings, input_items, message_usage, instructions)
+                turn.update(output=reply)
+                return message_usage
 
-        for call in function_calls:
-            input_items.append(function_call_for_input(call))
+            for call in function_calls:
+                input_items.append(function_call_for_input(call))
 
-            arguments = call.arguments
-            if isinstance(arguments, str):
-                arguments = json.loads(arguments)
+                arguments = call.arguments
+                if isinstance(arguments, str):
+                    arguments = json.loads(arguments)
 
-            mcp_result = await mcp_client.call_tool(call.name, arguments)
+                with tracing.start_tool(call.name, input=arguments) as tool_span:
+                    mcp_result = await mcp_client.call_tool(call.name, arguments)
 
-            if mcp_result.structured_content is not None:
-                result = json.dumps(mcp_result.structured_content)
-            else:
-                result = "\n".join(
-                    block.text
-                    for block in mcp_result.content
-                    if isinstance(block, TextContent)
-                )
+                    if mcp_result.structured_content is not None:
+                        output = mcp_result.structured_content
+                        result = json.dumps(output)
+                    else:
+                        result = "\n".join(
+                            block.text
+                            for block in mcp_result.content
+                            if isinstance(block, TextContent)
+                        )
+                        output = result
 
-            input_items.append({
-                "type": "function_call_output",
-                "call_id": call.call_id,
-                "output": result,
-            })
+                    tool_span.update(output=output)
 
-    # If we get here, we exceeded the max number of tool rounds.
-    display.print_message("I'm having trouble finishing that request. Could you try again?")
-    return message_usage
+                input_items.append({
+                    "type": "function_call_output",
+                    "call_id": call.call_id,
+                    "output": result,
+                })
+
+        # If we get here, we exceeded the max number of tool rounds.
+        stalled = "I'm having trouble finishing that request. Could you try again?"
+        display.print_message(stalled)
+        turn.update(output=stalled)
+        return message_usage

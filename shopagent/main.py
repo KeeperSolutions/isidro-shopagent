@@ -3,13 +3,15 @@ import asyncio
 from mcp import Client, StdioServerParameters
 from mcp.client.stdio import stdio_client
 
-from shopagent import agent, costs, display
+from shopagent import agent, costs, display, tracing
 from shopagent.config import load_settings
 from shopagent.openai_client import create_client
 
 
 async def main() -> None:
     settings = load_settings()
+    tracing.init_tracing()
+    tracing.start_session()
     client = create_client(settings)
     input_items = []
     session_usage = costs.empty_usage()
@@ -79,6 +81,9 @@ async def main() -> None:
 
         except KeyboardInterrupt:
             display.console.print()
+
+        finally:
+            tracing.flush_tracing()
 
     display.print_goodbye()
 

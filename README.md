@@ -91,6 +91,15 @@ All settings live in `.env` (see `.env.example`):
 | `STRIPE_WEBHOOK_SECRET` | Webhook signing secret (`whsec_...`) for `POST /webhooks/stripe` |
 | `SHOPAGENT_API_URL` | FastAPI base URL for cart/checkout tools (default `http://127.0.0.1:8000`) |
 | `SHOPAGENT_API_KEY` | API key from `python -m shopagent.create_api_key` (required for cart, totals, and checkout) |
+| `LANGFUSE_PUBLIC_KEY` | Langfuse public key (optional; tracing is off when unset) |
+| `LANGFUSE_SECRET_KEY` | Langfuse secret key |
+| `LANGFUSE_BASE_URL` | Langfuse host (default `https://cloud.langfuse.com`) |
+
+### Langfuse tracing
+
+When Langfuse keys are set, each shopper turn is one trace (`handle-user-message`) and the whole CLI conversation is one [session](https://langfuse.com/docs/observability/features/sessions). OpenAI calls nest as generations (model, tokens, cost); MCP calls nest as tools named after the function.
+
+After a few turns, open **Traces** for individual requests and **Sessions** for the full conversation.
 
 ### Supported models and pricing
 
