@@ -161,6 +161,10 @@ def refund_order(order_id: UUID, session: SessionDep, api_key: ApiKeyDep):
     order.status = OrderStatus.refunded
     session.add(order)
     session.commit()
+
+    for item in get_order_items(session, order.id):
+        catalog.adjust_inventory(item.sku, item.quantity)
+
     session.refresh(order)
 
     return OrderRefundPublic(
