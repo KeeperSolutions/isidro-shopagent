@@ -1,8 +1,11 @@
+import logging
 import time
 
 from openai import PermissionDeniedError
 
 from shopagent import tracing
+
+logging.getLogger("httpx2").setLevel(logging.WARNING)
 
 _MODERATION_MAX_ATTEMPTS = 3
 _MODERATION_RETRY_DELAY_SECONDS = 0.5

@@ -15,6 +15,7 @@ load_dotenv()
 
 # This is so we don't see the HTTPX logs in the agent as it's leaking the logs.
 logging.getLogger("httpx").setLevel(logging.WARNING)
+logging.getLogger("httpx2").setLevel(logging.WARNING)
 
 
 def _client() -> httpx.Client:
