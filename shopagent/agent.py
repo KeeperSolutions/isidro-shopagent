@@ -1,6 +1,7 @@
 """The agent loop: moderate, run tools, and reply."""
 
 import json
+from dataclasses import dataclass, field
 
 from mcp import Client
 from mcp.types import TextContent
@@ -26,6 +27,13 @@ def _instructions() -> str:
 _FALLBACK_REPLY = "I'm sorry, I couldn't put together a reply. Please try again."
 
 
+@dataclass
+class TurnResult:
+    usage: dict
+    reply: str = ""
+    tool_calls: list[dict] = field(default_factory=list)
+
+
 async def handle_user_message(
     input_items,
     client,
@@ -40,6 +48,7 @@ async def handle_user_message(
     Returns None if the message is blocked by moderation.
     """
     sanitized = user_text.replace(DELIMITER, "")
+    tool_calls: list[dict] = []
 
     with tracing.start_agent_turn(user_text=sanitized) as turn:
         moderation = moderate_text(client, sanitized)
@@ -77,7 +86,11 @@ async def handle_user_message(
                 display.end_stream_message()
                 input_items.append({"role": "assistant", "content": text})
                 turn.update(output=text)
-                return message_usage
+                return TurnResult(
+                    usage=message_usage,
+                    reply=text,
+                    tool_calls=tool_calls,
+                )
 
             if streamed_text:
                 display.end_stream_message()
@@ -88,6 +101,8 @@ async def handle_user_message(
                 arguments = call.arguments
                 if isinstance(arguments, str):
                     arguments = json.loads(arguments)
+
+                tool_calls.append({"name": call.name, "arguments": arguments})
 
                 with tracing.start_tool(call.name, input=arguments) as tool_span:
                     mcp_result = await mcp_client.call_tool(call.name, arguments)
@@ -115,4 +130,8 @@ async def handle_user_message(
         stalled = "I'm having trouble finishing that request. Could you try again?"
         display.print_message(stalled)
         turn.update(output=stalled)
-        return message_usage
+        return TurnResult(
+            usage=message_usage,
+            reply=stalled,
+            tool_calls=tool_calls,
+        )

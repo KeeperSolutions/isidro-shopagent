@@ -56,7 +56,7 @@ async def main() -> None:
                     break
 
                 display.print_agent_prefix()
-                message_usage = await agent.handle_user_message(
+                turn = await agent.handle_user_message(
                     input_items,
                     client,
                     settings,
@@ -66,16 +66,16 @@ async def main() -> None:
                 )
 
                 # If the message is blocked by moderation, don't add usage and continue
-                if message_usage is None:
+                if turn is None:
                     display.console.print()
                     continue
 
-                costs.add_usage(session_usage, message_usage)
-                message_cost = costs.cost_usd(message_usage, settings["input_price"], settings["output_price"])
+                costs.add_usage(session_usage, turn.usage)
+                message_cost = costs.cost_usd(turn.usage, settings["input_price"], settings["output_price"])
                 session_cost = costs.cost_usd(session_usage, settings["input_price"], settings["output_price"])
 
                 display.print_usage(
-                    message_usage,
+                    turn.usage,
                     message_cost,
                     session_usage,
                     session_cost,
