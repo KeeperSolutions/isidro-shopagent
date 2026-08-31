@@ -9,21 +9,18 @@ from shopagent.config import load_settings
 from shopagent.db import get_connection
 from shopagent.embeddings import embed_texts, embedding_text, create_vector_string
 from shopagent.openai_client import create_client
+from shopagent.stripe_sync import sync_stripe_catalog
 
 _CATALOG_PATH = Path(__file__).resolve().parent.parent / "data" / "catalog.json"
 
 
-def seed_catalog(*, catalog_path: Path | None = None) -> None:
+def seed_catalog() -> None:
     """Seed products/variants from JSON and always refresh embeddings."""
-    path = catalog_path or _CATALOG_PATH
+    path = _CATALOG_PATH
     with path.open(encoding="utf-8") as f:
         catalog = json.load(f)
 
-    products = catalog["products"]
-    if not products:
-        print("No products found in catalog; nothing to seed.")
-        return
-
+    products = catalog.get("products")
     settings = load_settings()
     client = create_client(settings)
 
@@ -84,6 +81,7 @@ def seed_catalog(*, catalog_path: Path | None = None) -> None:
 
 def main() -> None:
     seed_catalog()
+    sync_stripe_catalog()
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from shopagent.api.routers import cart, orders
+from shopagent.api.routers import cart, checkout, orders, webhooks
 from shopagent.db import create_db_and_tables
 
 app = FastAPI()
@@ -13,6 +13,8 @@ def on_startup():
 
 app.include_router(cart.router)
 app.include_router(orders.router)
+app.include_router(checkout.router)
+app.include_router(webhooks.router)
 
 
 @app.get("/")
