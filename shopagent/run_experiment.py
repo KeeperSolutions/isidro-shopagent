@@ -1,12 +1,9 @@
-"""Run evals/dataset.json as a Langfuse experiment."""
+"""Run the shopagent-offline Langfuse dataset as an experiment."""
 
 from __future__ import annotations
 
-import json
 import sys
 from contextlib import contextmanager
-from pathlib import Path
-from unittest.mock import patch
 
 from dotenv import load_dotenv
 from langfuse import Evaluation, get_client
@@ -20,22 +17,16 @@ from shopagent.score import score
 
 load_dotenv()
 
-DATASET_PATH = Path(__file__).resolve().parent.parent / "evals" / "dataset.json"
-
 
 @contextmanager
 def _silent_display():
     """Suppress Rich CLI output during eval turns."""
-    noop = lambda *args, **kwargs: None
-    with patch.multiple(
-        display,
-        print_agent_prefix=noop,
-        print_stream_message=noop,
-        end_stream_message=noop,
-        print_message=noop,
-        print_moderation_message=noop,
-    ):
+    was_quiet = display.console.quiet
+    display.console.quiet = True
+    try:
         yield
+    finally:
+        display.console.quiet = was_quiet
 
 
 def _seed_cart(cart: dict | None) -> None:
@@ -68,15 +59,14 @@ async def _run_turn(item_input: dict, settings: dict) -> dict:
             for tool in tool_list.tools
         ]
 
-        with _silent_display():
-            turn = await agent.handle_user_message(
-                [],
-                create_client(settings),
-                settings,
-                item_input["user"],
-                mcp_client,
-                tools,
-            )
+        turn = await agent.handle_user_message(
+            [],
+            create_client(settings),
+            settings,
+            item_input["user"],
+            mcp_client,
+            tools,
+        )
 
     if turn is None:
         return {"reply": "", "tool_calls": []}
@@ -114,32 +104,23 @@ def _pass_evaluator(*, output, expected_output, **kwargs):
 
 
 def main() -> int:
-    bundle = json.loads(DATASET_PATH.read_text(encoding="utf-8"))
     settings = load_settings()
     tracing.init_tracing()
 
-    data = [
-        {
-            "input": item["input"],
-            "expected_output": item["expected_output"],
-            "metadata": {"id": item["id"]},
-        }
-        for item in bundle["items"]
-    ]
-
     langfuse = get_client()
+    dataset = langfuse.get_dataset("shopagent-offline", fetch_items_page_size=100)
 
     async def task(*, item, **kwargs):
         return await _task(item=item, settings=settings, **kwargs)
 
-    result = langfuse.run_experiment(
-        name=bundle["name"],
-        description=bundle.get("description"),
-        data=data,
-        task=task,
-        evaluators=[_pass_evaluator],
-        max_concurrency=1,
-    )
+    with _silent_display():
+        result = dataset.run_experiment(
+            name="shopagent-offline",
+            description=dataset.description,
+            task=task,
+            evaluators=[_pass_evaluator],
+            max_concurrency=1,
+        )
 
     print(result.format())
     langfuse.flush()
