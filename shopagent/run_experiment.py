@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import sys
 from contextlib import contextmanager
 
@@ -9,9 +10,13 @@ from dotenv import load_dotenv
 from langfuse import Evaluation, get_client
 from mcp import Client, StdioServerParameters
 from mcp.client.stdio import stdio_client
+from sqlmodel import Session, select
 
 from shopagent import agent, api_client, display, tracing
+from shopagent.api.auth import hash_api_key
+from shopagent.api.models import ApiKey, Cart, CartItem, Order
 from shopagent.config import load_settings
+from shopagent.db import engine
 from shopagent.openai_client import create_client
 from shopagent.score import score
 
@@ -29,44 +34,77 @@ def _silent_display():
         display.console.quiet = was_quiet
 
 
-def _seed_cart(cart: dict | None) -> None:
-    if not cart or not cart.get("items"):
+def _delete_eval_carts() -> None:
+    """Delete carts owned by the shared API key that no order references."""
+    raw_key = os.getenv("SHOPAGENT_API_KEY", "")
+    if not raw_key:
         return
-    
+    with Session(engine) as session:
+        api_key = session.exec(
+            select(ApiKey).where(ApiKey.key_hash == hash_api_key(raw_key))
+        ).first()
+        if api_key is None:
+            return
+        carts = list(
+            session.exec(select(Cart).where(Cart.api_key_id == api_key.id)).all()
+        )
+        for cart in carts:
+            has_order = session.exec(
+                select(Order.id).where(Order.cart_id == cart.id)
+            ).first()
+            if has_order is not None:
+                continue
+            items = session.exec(
+                select(CartItem).where(CartItem.cart_id == cart.id)
+            ).all()
+            for item in items:
+                session.delete(item)
+            session.delete(cart)
+        session.commit()
+
+
+def _seed_cart(cart: dict | None) -> None:
+    _delete_eval_carts()
+    items = (cart or {}).get("items") or []
+    if not items:
+        return
     api_client.create_cart()
-    
-    for line in cart["items"]:
+    for line in items:
         api_client.add_cart_item(line["sku"], line["quantity"])
 
 
 async def _run_turn(item_input: dict, settings: dict) -> dict:
-    _seed_cart(item_input.get("cart"))
+    turn = None
+    try:
+        _seed_cart(item_input.get("cart"))
 
-    server_params = StdioServerParameters(
-        command="python",
-        args=["-m", "shopagent.mcp_server"],
-    )
-
-    async with Client(stdio_client(server_params)) as mcp_client:
-        tool_list = await mcp_client.list_tools()
-        tools = [
-            {
-                "type": "function",
-                "name": tool.name,
-                "description": tool.description or "",
-                "parameters": tool.input_schema,
-            }
-            for tool in tool_list.tools
-        ]
-
-        turn = await agent.handle_user_message(
-            [],
-            create_client(settings),
-            settings,
-            item_input["user"],
-            mcp_client,
-            tools,
+        server_params = StdioServerParameters(
+            command="python",
+            args=["-m", "shopagent.mcp_server"],
         )
+
+        async with Client(stdio_client(server_params)) as mcp_client:
+            tool_list = await mcp_client.list_tools()
+            tools = [
+                {
+                    "type": "function",
+                    "name": tool.name,
+                    "description": tool.description or "",
+                    "parameters": tool.input_schema,
+                }
+                for tool in tool_list.tools
+            ]
+
+            turn = await agent.handle_user_message(
+                [],
+                create_client(settings),
+                settings,
+                item_input["user"],
+                mcp_client,
+                tools,
+            )
+    finally:
+        _delete_eval_carts()
 
     if turn is None:
         return {"reply": "", "tool_calls": []}
