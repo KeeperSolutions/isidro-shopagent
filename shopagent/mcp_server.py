@@ -11,7 +11,7 @@ mcp = MCPServer(
     "ShopAgent",
     instructions=(
         "Shopping tools for a footwear catalog. "
-        "Filter or semantically search products, check stock, and manage an in-memory cart. "
+        "Filter or semantically search products, check stock, and manage a cart on the ShopAgent API. "
         "Prices are USD. Categories: Running, Sneakers, Boots, Sandals."
     ),
 )

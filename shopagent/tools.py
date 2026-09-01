@@ -1,7 +1,6 @@
 import json
 from enum import Enum
 
-from openai import pydantic_function_tool
 from pydantic import BaseModel, Field, ValidationError
 
 from shopagent import api_client, catalog, memory
@@ -109,77 +108,6 @@ class SaveShopperMemoryArgs(BaseModel):
         description="Other lasting preferences to remember across sessions",
     )
 
-
-TOOLS = [
-    pydantic_function_tool(
-        FilterProductsArgs,
-        name="filter_products",
-        description=(
-            "Browse the catalog with filters only (category, max price, size, stock). "
-            "Use when the user wants a category or constraints without a free-text intent. "
-            "Returns products with matching variants."
-        ),
-    ),
-    pydantic_function_tool(
-        SemanticSearchArgs,
-        name="semantic_search",
-        description=(
-            "Semantic (vector) search over product descriptions. "
-            "Use for natural-language shopping intent. Pure similarity — no price/category filters. "
-            "Returns the top matching products with variants."
-        ),
-    ),
-    pydantic_function_tool(
-        GetProductArgs,
-        name="get_product",
-        description=(
-            "Fetch a single product and all of its variants by product id (e.g. fc200bac-dd85-42a6-a381-383b6d19abc6). "
-            "Use when the user asks about a known product."
-        ),
-    ),
-    pydantic_function_tool(
-        CheckStockArgs,
-        name="check_stock",
-        description=(
-            "Check inventory for an exact variant SKU. "
-            "Returns sku, product name, inventory count, and in_stock."
-        ),
-    ),
-    pydantic_function_tool(
-        AddToCartArgs,
-        name="add_to_cart",
-        description=(
-            "Add a product variant to the cart by SKU from a prior search result. "
-            "Returns the updated cart with subtotal. Do not invent SKUs."
-        ),
-    ),
-    pydantic_function_tool(
-        CalculateCartTotalArgs,
-        name="calculate_cart_total",
-        description=(
-            "Return the current cart items and subtotal without changing the cart. "
-            "Use when the user asks what is in the cart or how much it costs. "
-            "Do not call this right after add_to_cart (that already returns totals)."
-        ),
-    ),
-    pydantic_function_tool(
-        CheckoutArgs,
-        name="checkout",
-        description=(
-            "Create a Stripe checkout session for the current cart and return the payment URL. "
-            "Call only after the shopper explicitly confirms they want to pay, with confirmed=true. "
-            "Never invent a checkout URL. Show the url field to the shopper in full, including any # fragment."
-        ),
-    ),
-    pydantic_function_tool(
-        SaveShopperMemoryArgs,
-        name="save_shopper_memory",
-        description=(
-            "Save the shopper's name and lasting preferences (size, color, category, notes) "
-            "so they are remembered in later sessions. Only store what they explicitly shared."
-        ),
-    ),
-]
 
 _ARG_MODELS = {
     "filter_products": FilterProductsArgs,

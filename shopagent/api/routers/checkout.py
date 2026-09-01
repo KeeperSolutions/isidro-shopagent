@@ -43,6 +43,16 @@ def _price_ids_by_sku(client: stripe.StripeClient, skus: list[str]) -> dict[str,
 def _line_items(client: stripe.StripeClient, items: list[OrderItem]) -> list[SessionCreateParamsLineItem]:
     skus = [item.sku for item in items]
     price_ids = _price_ids_by_sku(client, skus)
+    missing = [sku for sku in skus if sku not in price_ids]
+    if missing:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "No active Stripe Price for SKU(s): "
+                + ", ".join(missing)
+                + ". Re-run python -m shopagent.seed to sync the catalog."
+            ),
+        )
     return [{"price": price_ids[item.sku], "quantity": item.quantity} for item in items]
 
 
