@@ -4,6 +4,8 @@ A conversational shopping assistant that lets a user discover products, manage a
 
 This project was made as part of the training program on Agents, FastAPI and Stripe.
 
+Known limitations are listed in [GAPS.md](GAPS.md).
+
 ## Quick start
 
 ```bash
