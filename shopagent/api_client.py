@@ -65,9 +65,11 @@ def add_cart_item(sku: str, quantity: int = 1) -> dict:
         f"/cart/{cart['id']}/items",
         json={"sku": sku, "quantity": quantity},
     )
+    added = data["added"]
+    added["quantity"] = quantity
     return {
         "ok": True,
-        "added": data["added"],
+        "added": added,
         "cart": summarize_cart({"id": cart["id"], "items": data["items"]}),
     }
 
