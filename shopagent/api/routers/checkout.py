@@ -4,11 +4,13 @@ from stripe.params.checkout import SessionCreateParams, SessionCreateParamsLineI
 
 from shopagent.api.auth import ApiKeyDep
 from shopagent.api.models import (
+    Cart,
     CheckoutCreate,
     CheckoutPublic,
     OrderItem,
     OrderStatus,
 )
+from shopagent.api.routers.cart import retire_cart
 from shopagent.api.routers.orders import get_order_items, get_owned_order
 from shopagent.db import SessionDep
 from shopagent.stripe_client import get_stripe_client
@@ -41,6 +43,16 @@ def _price_ids_by_sku(client: stripe.StripeClient, skus: list[str]) -> dict[str,
 def _line_items(client: stripe.StripeClient, items: list[OrderItem]) -> list[SessionCreateParamsLineItem]:
     skus = [item.sku for item in items]
     price_ids = _price_ids_by_sku(client, skus)
+    missing = [sku for sku in skus if sku not in price_ids]
+    if missing:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "No active Stripe Price for SKU(s): "
+                + ", ".join(missing)
+                + ". Re-run python -m shopagent.seed to sync the catalog."
+            ),
+        )
     return [{"price": price_ids[item.sku], "quantity": item.quantity} for item in items]
 
 
@@ -81,6 +93,11 @@ def create_checkout_session(
 
     if not checkout_session.url:
         raise HTTPException(status_code=502, detail="Stripe did not return a checkout URL")
+
+    cart = session.get(Cart, order.cart_id)
+    if cart is not None:
+        retire_cart(session, cart)
+        session.commit()
 
     return CheckoutPublic(session_id=checkout_session.id, url=checkout_session.url)
 

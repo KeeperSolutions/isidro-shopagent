@@ -214,6 +214,27 @@ def check_stock(sku: str) -> dict | None:
     }
 
 
+def adjust_inventory(sku: str, delta: int) -> int | None:
+    """Adjust variant inventory by delta. Returns new inventory, or None if SKU unknown."""
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                UPDATE variants
+                SET inventory = inventory + %s
+                WHERE sku = %s
+                  AND inventory + %s >= 0
+                RETURNING inventory
+                """,
+                (delta, sku, delta),
+            )
+            row = cur.fetchone()
+        conn.commit()
+    if row is None:
+        return None
+    return row["inventory"]
+
+
 def get_variant_by_sku(sku: str) -> dict | None:
     """Returns a dict with product fields plus the matching variant, or None if unknown."""
     with get_connection() as conn:

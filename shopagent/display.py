@@ -4,13 +4,14 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.prompt import Prompt
 from rich.table import Table
+from rich.text import Text
 
 from shopagent.costs import total_tokens
 
 console = Console()
 
 
-def print_welcome():
+def print_welcome(opening_message: str):
     console.print(
         Panel.fit(
             "[bold]ShopAgent[/bold]\n"
@@ -20,6 +21,9 @@ def print_welcome():
             padding=(1, 2),
         )
     )
+    console.print()
+    # Have to do it like this because it wraps the line otherwise
+    console.print(Text.assemble(("ShopAgent: ", "bold magenta"), opening_message), highlight=False)
     console.print()
 
 

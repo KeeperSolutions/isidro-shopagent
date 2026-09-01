@@ -11,12 +11,10 @@ mcp = MCPServer(
     "ShopAgent",
     instructions=(
         "Shopping tools for a footwear catalog. "
-        "Filter or semantically search products, check stock, and manage an in-memory cart. "
+        "Filter or semantically search products, check stock, and manage a cart on the ShopAgent API. "
         "Prices are USD. Categories: Running, Sneakers, Boots, Sandals."
     ),
 )
-
-_cart: list[dict] = []
 
 
 @mcp.tool()
@@ -50,7 +48,6 @@ def filter_products(
             "size": size,
             "in_stock_only": in_stock_only,
         },
-        _cart,
     )
 
 
@@ -74,7 +71,6 @@ def semantic_search(
             "query": query,
             "limit": limit,
         },
-        _cart,
     )
 
 
@@ -85,7 +81,7 @@ def get_product(
     ),
 ) -> dict:
     """Fetch a single product and all of its variants by product id (e.g. fc200bac-dd85-42a6-a381-383b6d19abc6)."""
-    return execute_tool("get_product", {"product_id": product_id}, _cart)
+    return execute_tool("get_product", {"product_id": product_id})
 
 
 @mcp.tool()
@@ -97,7 +93,7 @@ def check_stock(
     """Check inventory for an exact variant SKU.
     Returns sku, product name, inventory count, and in_stock.
     """
-    return execute_tool("check_stock", {"sku": sku}, _cart)
+    return execute_tool("check_stock", {"sku": sku})
 
 
 @mcp.tool()
@@ -113,17 +109,68 @@ def add_to_cart(
     """Add a product variant to the cart by SKU from a prior search result.
     Returns the updated cart with subtotal. Do not invent SKUs.
     """
-    return execute_tool(
-        "add_to_cart",
-        {"sku": sku, "quantity": quantity},
-        _cart,
-    )
+    return execute_tool("add_to_cart", {"sku": sku, "quantity": quantity})
 
 
 @mcp.tool()
 def calculate_cart_total() -> dict:
     """Return the current cart items and subtotal without changing the cart."""
-    return execute_tool("calculate_cart_total", {}, _cart)
+    return execute_tool("calculate_cart_total", {})
+
+
+@mcp.tool()
+def checkout(
+    confirmed: bool = Field(
+        default=False,
+        description=(
+            "Must be true only after the shopper explicitly confirmed they want to pay. "
+            "If false, returns the cart summary and does not create a checkout session."
+        ),
+    ),
+) -> dict:
+    """Create a Stripe checkout session for the current cart and return the payment URL.
+    Call only after the shopper explicitly confirms they want to pay, with confirmed=true.
+    Never invent a checkout URL. Show the url field to the shopper in full, including any # fragment.
+    """
+    return execute_tool("checkout", {"confirmed": confirmed})
+
+
+@mcp.tool()
+def save_shopper_memory(
+    name: str | None = Field(
+        default=None,
+        description="Shopper's name, if they shared it",
+    ),
+    preferred_size: str | None = Field(
+        default=None,
+        description='Preferred shoe size (e.g. "9")',
+    ),
+    preferred_color: str | None = Field(
+        default=None,
+        description="Preferred color, if they shared one",
+    ),
+    preferred_category: str | None = Field(
+        default=None,
+        description="Preferred category: Running, Sneakers, Boots, or Sandals",
+    ),
+    notes: str | None = Field(
+        default=None,
+        description="Other lasting preferences to remember across sessions",
+    ),
+) -> dict:
+    """Save the shopper's name and lasting preferences so they are remembered later.
+    Only store what they explicitly shared.
+    """
+    return execute_tool(
+        "save_shopper_memory",
+        {
+            "name": name,
+            "preferred_size": preferred_size,
+            "preferred_color": preferred_color,
+            "preferred_category": preferred_category,
+            "notes": notes,
+        },
+    )
 
 
 def main() -> None:

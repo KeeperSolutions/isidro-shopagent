@@ -1,13 +1,19 @@
+import logging
 import time
 
 from openai import PermissionDeniedError
+
+from shopagent import tracing
+
+logging.getLogger("httpx2").setLevel(logging.WARNING)
 
 _MODERATION_MAX_ATTEMPTS = 3
 _MODERATION_RETRY_DELAY_SECONDS = 0.5
 
 
 def create_client(settings):
-    from openai import OpenAI
+    tracing.init_tracing()
+    from langfuse.openai import OpenAI
 
     return OpenAI(api_key=settings["api_key"])
 
@@ -55,27 +61,6 @@ def _response_kwargs(
     return kwargs
 
 
-def parse_response(
-    client,
-    settings,
-    input_items,
-    instructions,
-    *,
-    tools=None,
-    tool_choice=None,
-):
-    """Call the Responses API with client.responses.parse and return the response."""
-    return client.responses.parse(
-        **_response_kwargs(
-            settings,
-            input_items,
-            instructions,
-            tools=tools,
-            tool_choice=tool_choice,
-        )
-    )
-
-
 def stream_response(
     client,
     settings,
@@ -86,7 +71,13 @@ def stream_response(
     tool_choice=None,
     on_text_delta=None,
 ):
-    """Stream a Responses API call."""
+    """Stream a Responses API call.
+
+    Text deltas are forwarded only until a function_call output item appears,
+    so a tool round stays silent if the model also emits text.
+    """
+    suppress_text = False
+    streamed_text = False
     with client.responses.stream(
         **_response_kwargs(
             settings,
@@ -97,9 +88,13 @@ def stream_response(
         )
     ) as stream:
         for event in stream:
-            if on_text_delta is not None and event.type == "response.output_text.delta":
+            # If we get a function call, it means we're in a tool round and this is not something we want to show to the user.
+            if (event.type == "response.output_item.added" and event.item.type == "function_call"):
+                suppress_text = True
+            if (on_text_delta is not None and not suppress_text and event.type == "response.output_text.delta"):
                 on_text_delta(event.delta)
-        return stream.get_final_response()
+                streamed_text = True
+        return stream.get_final_response(), streamed_text
 
 
 def format_response_usage(response):

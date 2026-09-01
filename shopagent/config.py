@@ -15,6 +15,7 @@ PRICING = {
 
 DEFAULT_MODEL = "gpt-4.1-mini"
 DEFAULT_EMBEDDING_MODEL = "text-embedding-3-small"
+DEFAULT_API_URL = "http://127.0.0.1:8000"
 FALLBACK_PRICING = PRICING[DEFAULT_MODEL]
 
 
@@ -31,6 +32,8 @@ def load_settings():
     model = os.getenv("OPENAI_MODEL", DEFAULT_MODEL)
     embedding_model = os.getenv("OPENAI_EMBEDDING_MODEL", DEFAULT_EMBEDDING_MODEL)
     input_price, output_price = PRICING.get(model, FALLBACK_PRICING)
+    shop_api_url = os.getenv("SHOPAGENT_API_URL", DEFAULT_API_URL)
+    shop_api_key = os.getenv("SHOPAGENT_API_KEY")
 
     return {
         "api_key": api_key,
@@ -40,4 +43,6 @@ def load_settings():
         "input_price": input_price,
         "output_price": output_price,
         "temperature": temperature,
+        "shop_api_url": shop_api_url,
+        "shop_api_key": shop_api_key,
     }

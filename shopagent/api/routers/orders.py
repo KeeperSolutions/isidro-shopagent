@@ -4,6 +4,7 @@ import stripe
 from fastapi import APIRouter, HTTPException
 from sqlmodel import Session, col, select
 
+from shopagent import catalog
 from shopagent.api.auth import ApiKeyDep
 from shopagent.api.models import (
     ApiKey,
@@ -67,13 +68,61 @@ def get_order_public(session: Session, order: Order) -> OrderPublic:
     )
 
 
+def get_pending_order_for_cart(session: Session, cart_id: UUID) -> Order | None:
+    return session.exec(
+        select(Order).where(
+            Order.cart_id == cart_id,
+            Order.status == OrderStatus.pending,
+        )
+    ).first()
+
+
+def list_owned_orders(session: Session, api_key: ApiKey) -> list[Order]:
+    return list(
+        session.exec(
+            select(Order)
+            .join(Cart, col(Cart.id) == col(Order.cart_id))
+            .where(Cart.api_key_id == api_key.id)
+            .order_by(col(Order.created_at).desc())
+        ).all()
+    )
+
+
+@router.get("", response_model=list[OrderPublic])
+def list_orders(session: SessionDep, api_key: ApiKeyDep) -> list[OrderPublic]:
+    return [get_order_public(session, order) for order in list_owned_orders(session, api_key)]
+
+
 @router.post("", response_model=OrderPublic)
 def create_order(body: OrderCreate, session: SessionDep, api_key: ApiKeyDep):
     cart = get_owned_cart(session, body.cart_id, api_key)
     if cart.status != CartStatus.active:
         raise HTTPException(status_code=409, detail="Cart is not active")
 
+    existing = get_pending_order_for_cart(session, cart.id)
+    if existing is not None:
+        return get_order_public(session, existing)
+
     cart_items = get_cart_items(session, cart.id)
+    if not cart_items:
+        raise HTTPException(status_code=400, detail="Cart is empty")
+
+    for item in cart_items:
+        variant = catalog.get_variant_by_sku(item.sku)
+        if variant is None:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Unknown SKU: {item.sku!r}",
+            )
+        if item.quantity > variant["inventory"]:
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    f"Only {variant['inventory']} in stock for {item.sku}; "
+                    f"cart has {item.quantity}."
+                ),
+            )
+
     item_count = sum(item.quantity for item in cart_items)
     subtotal = sum(item.unit_price * item.quantity for item in cart_items)
 
@@ -97,9 +146,6 @@ def create_order(body: OrderCreate, session: SessionDep, api_key: ApiKeyDep):
                 color=item.color,
             )
         )
-        session.delete(item)
-
-    cart.status = CartStatus.checked_out
 
     session.commit()
     session.refresh(order)
@@ -141,6 +187,10 @@ def refund_order(order_id: UUID, session: SessionDep, api_key: ApiKeyDep):
     order.status = OrderStatus.refunded
     session.add(order)
     session.commit()
+
+    for item in get_order_items(session, order.id):
+        catalog.adjust_inventory(item.sku, item.quantity)
+
     session.refresh(order)
 
     return OrderRefundPublic(

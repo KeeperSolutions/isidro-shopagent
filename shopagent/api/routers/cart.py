@@ -57,6 +57,16 @@ def get_owned_cart(session: Session, cart_id: UUID, api_key: ApiKey) -> Cart:
     return cart
 
 
+def retire_cart(session: Session, cart: Cart) -> None:
+    """Mark a cart checked out and drop its line items. Idempotent."""
+    if cart.status != CartStatus.active:
+        return
+    for item in get_cart_items(session, cart.id):
+        session.delete(item)
+    cart.status = CartStatus.checked_out
+    session.add(cart)
+
+
 @router.post("", response_model=CartCreatePublic)
 def create_cart(session: SessionDep, api_key: ApiKeyDep) -> CartCreatePublic:
     if get_active_cart(session, api_key) is not None:

@@ -3,18 +3,22 @@ import asyncio
 from mcp import Client, StdioServerParameters
 from mcp.client.stdio import stdio_client
 
-from shopagent import agent, costs, display
+from shopagent import agent, costs, display, memory, tracing
 from shopagent.config import load_settings
 from shopagent.openai_client import create_client
+from shopagent.prompts import build_opening_message
 
 
 async def main() -> None:
     settings = load_settings()
+    tracing.init_tracing()
+    tracing.start_session()
     client = create_client(settings)
+    opening_message = build_opening_message(memory.load_memory())
     input_items = []
     session_usage = costs.empty_usage()
 
-    display.print_welcome()
+    display.print_welcome(opening_message)
 
     server_params = StdioServerParameters(
         command="python",
@@ -52,7 +56,7 @@ async def main() -> None:
                     break
 
                 display.print_agent_prefix()
-                message_usage = await agent.handle_user_message(
+                turn = await agent.handle_user_message(
                     input_items,
                     client,
                     settings,
@@ -62,16 +66,16 @@ async def main() -> None:
                 )
 
                 # If the message is blocked by moderation, don't add usage and continue
-                if message_usage is None:
+                if turn is None:
                     display.console.print()
                     continue
 
-                costs.add_usage(session_usage, message_usage)
-                message_cost = costs.cost_usd(message_usage, settings["input_price"], settings["output_price"])
+                costs.add_usage(session_usage, turn.usage)
+                message_cost = costs.cost_usd(turn.usage, settings["input_price"], settings["output_price"])
                 session_cost = costs.cost_usd(session_usage, settings["input_price"], settings["output_price"])
 
                 display.print_usage(
-                    message_usage,
+                    turn.usage,
                     message_cost,
                     session_usage,
                     session_cost,
@@ -79,6 +83,9 @@ async def main() -> None:
 
         except KeyboardInterrupt:
             display.console.print()
+
+        finally:
+            tracing.flush_tracing()
 
     display.print_goodbye()
 

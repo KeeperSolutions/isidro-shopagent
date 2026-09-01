@@ -1,11 +1,9 @@
 import json
 from enum import Enum
 
-from openai import pydantic_function_tool
 from pydantic import BaseModel, Field, ValidationError
 
-from shopagent import cart
-from shopagent import catalog
+from shopagent import api_client, catalog, memory
 
 
 class Category(str, Enum):
@@ -78,59 +76,38 @@ class CalculateCartTotalArgs(BaseModel):
     """Calculate the current cart and subtotal."""
 
 
-TOOLS = [
-    pydantic_function_tool(
-        FilterProductsArgs,
-        name="filter_products",
+class CheckoutArgs(BaseModel):
+    confirmed: bool = Field(
+        default=False,
         description=(
-            "Browse the catalog with filters only (category, max price, size, stock). "
-            "Use when the user wants a category or constraints without a free-text intent. "
-            "Returns products with matching variants."
+            "Must be true only after the shopper explicitly confirmed they want to pay. "
+            "If false, returns the cart summary and does not create a checkout session."
         ),
-    ),
-    pydantic_function_tool(
-        SemanticSearchArgs,
-        name="semantic_search",
-        description=(
-            "Semantic (vector) search over product descriptions. "
-            "Use for natural-language shopping intent. Pure similarity — no price/category filters. "
-            "Returns the top matching products with variants."
-        ),
-    ),
-    pydantic_function_tool(
-        GetProductArgs,
-        name="get_product",
-        description=(
-            "Fetch a single product and all of its variants by product id (e.g. fc200bac-dd85-42a6-a381-383b6d19abc6). "
-            "Use when the user asks about a known product."
-        ),
-    ),
-    pydantic_function_tool(
-        CheckStockArgs,
-        name="check_stock",
-        description=(
-            "Check inventory for an exact variant SKU. "
-            "Returns sku, product name, inventory count, and in_stock."
-        ),
-    ),
-    pydantic_function_tool(
-        AddToCartArgs,
-        name="add_to_cart",
-        description=(
-            "Add a product variant to the cart by SKU from a prior search result. "
-            "Returns the updated cart with subtotal. Do not invent SKUs."
-        ),
-    ),
-    pydantic_function_tool(
-        CalculateCartTotalArgs,
-        name="calculate_cart_total",
-        description=(
-            "Return the current cart items and subtotal without changing the cart. "
-            "Use when the user asks what is in the cart or how much it costs. "
-            "Do not call this right after add_to_cart (that already returns totals)."
-        ),
-    ),
-]
+    )
+
+
+class SaveShopperMemoryArgs(BaseModel):
+    name: str | None = Field(
+        default=None,
+        description="Shopper's name, if they shared it",
+    )
+    preferred_size: str | None = Field(
+        default=None,
+        description='Preferred shoe size (e.g. "9")',
+    )
+    preferred_color: str | None = Field(
+        default=None,
+        description="Preferred color, if they shared one",
+    )
+    preferred_category: str | None = Field(
+        default=None,
+        description="Preferred category: Running, Sneakers, Boots, or Sandals",
+    )
+    notes: str | None = Field(
+        default=None,
+        description="Other lasting preferences to remember across sessions",
+    )
+
 
 _ARG_MODELS = {
     "filter_products": FilterProductsArgs,
@@ -139,6 +116,8 @@ _ARG_MODELS = {
     "check_stock": CheckStockArgs,
     "add_to_cart": AddToCartArgs,
     "calculate_cart_total": CalculateCartTotalArgs,
+    "checkout": CheckoutArgs,
+    "save_shopper_memory": SaveShopperMemoryArgs,
 }
 
 
@@ -174,27 +153,30 @@ def _run_check_stock(args: CheckStockArgs) -> dict:
     return stock
 
 
-def _run_add_to_cart(args: AddToCartArgs, session_cart: list[dict]) -> dict:
-    variant = catalog.get_variant_by_sku(args.sku)
-    if variant is None:
-        return _error("unknown_sku", f"No product variant found for SKU {args.sku!r}.")
-
-    result = cart.add_item(session_cart, variant, args.quantity)
-    if not result["ok"]:
-        return result
-
-    return {
-        "ok": True,
-        "added": result["added"],
-        "cart": cart.cart_summary(session_cart),
-    }
+def _run_add_to_cart(args: AddToCartArgs) -> dict:
+    return api_client.add_cart_item(args.sku, args.quantity)
 
 
-def _run_calculate_cart_total(session_cart: list[dict]) -> dict:
-    return cart.cart_summary(session_cart)
+def _run_calculate_cart_total() -> dict:
+    return api_client.get_cart_summary()
 
 
-def execute_tool(name: str, arguments, session_cart: list[dict]):
+def _run_checkout(args: CheckoutArgs) -> dict:
+    return api_client.checkout(confirmed=args.confirmed)
+
+
+def _run_save_shopper_memory(args: SaveShopperMemoryArgs) -> dict:
+    profile = memory.save_memory(
+        name=args.name,
+        preferred_size=args.preferred_size,
+        preferred_color=args.preferred_color,
+        preferred_category=args.preferred_category,
+        notes=args.notes,
+    )
+    return {"ok": True, "profile": profile}
+
+
+def execute_tool(name: str, arguments):
     """Validate tool arguments and run the matching handler."""
     if name not in _ARG_MODELS:
         return _error("unknown_tool", f"Unknown tool: {name!r}.")
@@ -225,8 +207,12 @@ def execute_tool(name: str, arguments, session_cart: list[dict]):
     if name == "check_stock":
         return _run_check_stock(args)
     if name == "add_to_cart":
-        return _run_add_to_cart(args, session_cart)
+        return _run_add_to_cart(args)
     if name == "calculate_cart_total":
-        return _run_calculate_cart_total(session_cart)
+        return _run_calculate_cart_total()
+    if name == "checkout":
+        return _run_checkout(args)
+    if name == "save_shopper_memory":
+        return _run_save_shopper_memory(args)
 
     return _error("unknown_tool", f"Unknown tool: {name!r}.")

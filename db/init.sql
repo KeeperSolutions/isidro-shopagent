@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS variants (
     size TEXT NOT NULL,
     color TEXT NOT NULL,
     price NUMERIC(10, 2) NOT NULL,
-    inventory INT NOT NULL
+    inventory INT NOT NULL CHECK (inventory >= 0)
 );
 
 CREATE INDEX IF NOT EXISTS idx_products_category ON products (category);
