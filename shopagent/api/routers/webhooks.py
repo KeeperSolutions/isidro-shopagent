@@ -8,7 +8,8 @@ import stripe
 from fastapi import APIRouter, HTTPException, Request
 
 from shopagent import catalog
-from shopagent.api.models import Order, OrderStatus
+from shopagent.api.models import Cart, Order, OrderStatus
+from shopagent.api.routers.cart import retire_cart
 from shopagent.api.routers.orders import get_order_items
 from shopagent.db import SessionDep
 from shopagent.stripe_client import get_stripe_client, get_stripe_webhook_secret
@@ -125,6 +126,11 @@ async def stripe_webhook(request: Request, session: SessionDep):
     was_pending = order.status == OrderStatus.pending
     order.status = OrderStatus.paid
     session.add(order)
+
+    cart = session.get(Cart, order.cart_id)
+    if cart is not None:
+        retire_cart(session, cart)
+
     session.commit()
 
     if was_pending:

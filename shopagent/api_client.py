@@ -26,7 +26,7 @@ def _client() -> httpx.Client:
     )
 
 
-def _request(method: str, path: str, **kwargs) -> dict:
+def _request(method: str, path: str, **kwargs):
     with _client() as client:
         response = client.request(method, path, **kwargs)
         response.raise_for_status()
@@ -74,8 +74,33 @@ def add_cart_item(sku: str, quantity: int = 1) -> dict:
     }
 
 
+def summarize_order(order: dict) -> dict:
+    summary = cart_summary(order.get("items") or [])
+    summary["cart_id"] = order.get("cart_id")
+    return summary
+
+
+def list_orders() -> list[dict]:
+    data = _request("GET", "/orders")
+    return data if isinstance(data, list) else []
+
+
+def get_pending_order() -> dict | None:
+    for order in list_orders():
+        if order.get("status") == "pending":
+            return order
+    return None
+
+
 def get_cart_summary() -> dict:
-    return summarize_cart(get_active_cart())
+    cart = get_active_cart()
+    summary = summarize_cart(cart)
+    if summary["items"]:
+        return summary
+    pending = get_pending_order()
+    if pending:
+        return summarize_order(pending)
+    return summary
 
 
 def create_order(cart_id: str) -> dict:
@@ -88,7 +113,13 @@ def create_checkout_session(order_id: str) -> dict:
 
 def checkout(*, confirmed: bool) -> dict:
     cart = get_active_cart()
-    summary = summarize_cart(cart)
+    cart_view = summarize_cart(cart)
+    pending = None
+    summary = cart_view
+    if not summary["items"]:
+        pending = get_pending_order()
+        if pending:
+            summary = summarize_order(pending)
     if not confirmed:
         return {
             "ok": False,
@@ -96,14 +127,17 @@ def checkout(*, confirmed: bool) -> dict:
             "message": "Ask the shopper to confirm they want to pay, then call checkout with confirmed=true.",
             "cart": summary,
         }
-    if not cart or not summary["items"]:
-        return {
-            "ok": False,
-            "error": "empty_cart",
-            "message": "The cart is empty. Add items before checkout.",
-            "cart": summary,
-        }
-    order = create_order(str(cart["id"]))
+    if cart is not None and cart_view["items"]:
+        order = create_order(str(cart["id"]))
+    else:
+        order = pending or get_pending_order()
+        if not order:
+            return {
+                "ok": False,
+                "error": "empty_cart",
+                "message": "The cart is empty. Add items before checkout.",
+                "cart": summary,
+            }
     session = create_checkout_session(str(order["id"]))
     return {
         "ok": True,

@@ -61,10 +61,11 @@ Docs: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
 | GET | `/cart` | View your active cart |
 | GET | `/cart/{cart_id}` | View a cart owned by this key |
 | POST | `/cart/{cart_id}/items` | Add a variant by SKU to your active cart |
-| POST | `/orders` | Create an order from an active cart (`{"cart_id": "..."}`) — rejects an empty cart and re-checks stock; starts as `pending` |
+| GET | `/orders` | List orders owned by this key (newest first); used to resume a pending checkout |
+| POST | `/orders` | Create an order from an active cart (`{"cart_id": "..."}`) — rejects an empty cart and re-checks stock; starts as `pending`; does not retire the cart |
 | GET | `/orders/{order_id}` | Fetch an order |
 | POST | `/orders/{order_id}/refund` | Full Stripe refund of a `paid` order |
-| POST | `/checkout` | Create a Stripe Checkout Session for a pending order (`{"order_id": "..."}`) |
+| POST | `/checkout` | Create a Stripe Checkout Session for a pending order (`{"order_id": "..."}`); retires the cart only after Stripe returns a URL |
 | POST | `/webhooks/stripe` | Stripe webhooks |
 
 Forward local events with the Stripe CLI:

@@ -4,11 +4,13 @@ from stripe.params.checkout import SessionCreateParams, SessionCreateParamsLineI
 
 from shopagent.api.auth import ApiKeyDep
 from shopagent.api.models import (
+    Cart,
     CheckoutCreate,
     CheckoutPublic,
     OrderItem,
     OrderStatus,
 )
+from shopagent.api.routers.cart import retire_cart
 from shopagent.api.routers.orders import get_order_items, get_owned_order
 from shopagent.db import SessionDep
 from shopagent.stripe_client import get_stripe_client
@@ -81,6 +83,11 @@ def create_checkout_session(
 
     if not checkout_session.url:
         raise HTTPException(status_code=502, detail="Stripe did not return a checkout URL")
+
+    cart = session.get(Cart, order.cart_id)
+    if cart is not None:
+        retire_cart(session, cart)
+        session.commit()
 
     return CheckoutPublic(session_id=checkout_session.id, url=checkout_session.url)
 
