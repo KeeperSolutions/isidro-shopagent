@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 from langfuse import Evaluation, get_client
 from mcp import Client, StdioServerParameters
 from mcp.client.stdio import stdio_client
-from sqlmodel import Session, select
+from sqlmodel import Session, col, delete, select
 
 from shopagent import agent, api_client, display, tracing
 from shopagent.api.auth import hash_api_key
@@ -48,18 +48,19 @@ def _delete_eval_carts() -> None:
         carts = list(
             session.exec(select(Cart).where(Cart.api_key_id == api_key.id)).all()
         )
+        cart_ids = []
         for cart in carts:
             has_order = session.exec(
                 select(Order.id).where(Order.cart_id == cart.id)
             ).first()
-            if has_order is not None:
-                continue
-            items = session.exec(
-                select(CartItem).where(CartItem.cart_id == cart.id)
-            ).all()
-            for item in items:
-                session.delete(item)
-            session.delete(cart)
+            if has_order is None:
+                cart_ids.append(cart.id)
+        if not cart_ids:
+            return
+        # Delete line items with SQL first. session.delete() lets the UOW
+        # emit DELETE cart before cartitem when there is no Relationship.
+        session.exec(delete(CartItem).where(col(CartItem.cart_id).in_(cart_ids)))
+        session.exec(delete(Cart).where(col(Cart.id).in_(cart_ids)))
         session.commit()
 
 
