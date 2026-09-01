@@ -223,9 +223,10 @@ def adjust_inventory(sku: str, delta: int) -> int | None:
                 UPDATE variants
                 SET inventory = inventory + %s
                 WHERE sku = %s
+                  AND inventory + %s >= 0
                 RETURNING inventory
                 """,
-                (delta, sku),
+                (delta, sku, delta),
             )
             row = cur.fetchone()
         conn.commit()
